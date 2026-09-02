@@ -1,0 +1,182 @@
+[
+  {
+    "id": "c001",
+    "name": "Rahul Sharma",
+    "email": "rahul.sharma@example.com",
+    "previousPurchases": 3,
+    "lifetimeValue": 18000,
+    "lastPurchaseDate": "2026-07-12",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c002",
+    "name": "Priya Nair",
+    "email": "priya.nair@example.com",
+    "previousPurchases": 1,
+    "lifetimeValue": 4200,
+    "lastPurchaseDate": "2026-06-02",
+    "customerSegment": "new"
+  },
+  {
+    "id": "c003",
+    "name": "Arjun Kumar",
+    "email": "arjun.kumar@example.com",
+    "previousPurchases": 5,
+    "lifetimeValue": 32500,
+    "lastPurchaseDate": "2026-08-01",
+    "customerSegment": "vip"
+  },
+  {
+    "id": "c004",
+    "name": "Sneha Reddy",
+    "email": "sneha.reddy@example.com",
+    "previousPurchases": 0,
+    "lifetimeValue": 0,
+    "lastPurchaseDate": "2026-05-20",
+    "customerSegment": "new"
+  },
+  {
+    "id": "c005",
+    "name": "Vikram Singh",
+    "email": "vikram.singh@example.com",
+    "previousPurchases": 2,
+    "lifetimeValue": 9800,
+    "lastPurchaseDate": "2026-07-25",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c006",
+    "name": "Ananya Iyer",
+    "email": "ananya.iyer@example.com",
+    "previousPurchases": 4,
+    "lifetimeValue": 21400,
+    "lastPurchaseDate": "2026-08-05",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c007",
+    "name": "Manish Agarwal",
+    "email": "manish.agarwal@example.com",
+    "previousPurchases": 6,
+    "lifetimeValue": 41200,
+    "lastPurchaseDate": "2026-08-10",
+    "customerSegment": "vip"
+  },
+  {
+    "id": "c008",
+    "name": "Kavita Joshi",
+    "email": "kavita.joshi@example.com",
+    "previousPurchases": 1,
+    "lifetimeValue": 3600,
+    "lastPurchaseDate": "2026-04-18",
+    "customerSegment": "new"
+  },
+  {
+    "id": "c009",
+    "name": "Rohan Mehta",
+    "email": "rohan.mehta@example.com",
+    "previousPurchases": 2,
+    "lifetimeValue": 11200,
+    "lastPurchaseDate": "2026-07-02",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c010",
+    "name": "Divya Menon",
+    "email": "divya.menon@example.com",
+    "previousPurchases": 3,
+    "lifetimeValue": 15800,
+    "lastPurchaseDate": "2026-06-28",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c011",
+    "name": "Suresh Pillai",
+    "email": "suresh.pillai@example.com",
+    "previousPurchases": 0,
+    "lifetimeValue": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "customerSegment": "new"
+  },
+  {
+    "id": "c012",
+    "name": "Neha Kapoor",
+    "email": "neha.kapoor@example.com",
+    "previousPurchases": 7,
+    "lifetimeValue": 52300,
+    "lastPurchaseDate": "2026-08-15",
+    "customerSegment": "vip"
+  },
+  {
+    "id": "c013",
+    "name": "Amit Verma",
+    "email": "amit.verma@example.com",
+    "previousPurchases": 2,
+    "lifetimeValue": 8700,
+    "lastPurchaseDate": "2026-06-10",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c014",
+    "name": "Pooja Rao",
+    "email": "pooja.rao@example.com",
+    "previousPurchases": 1,
+    "lifetimeValue": 4100,
+    "lastPurchaseDate": "2026-05-05",
+    "customerSegment": "new"
+  },
+  {
+    "id": "c015",
+    "name": "Karan Malhotra",
+    "email": "karan.malhotra@example.com",
+    "previousPurchases": 4,
+    "lifetimeValue": 19600,
+    "lastPurchaseDate": "2026-07-30",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c016",
+    "name": "Ritu Chawla",
+    "email": "ritu.chawla@example.com",
+    "previousPurchases": 0,
+    "lifetimeValue": 0,
+    "lastPurchaseDate": "2026-02-22",
+    "customerSegment": "new"
+  },
+  {
+    "id": "c017",
+    "name": "Sanjay Gupta",
+    "email": "sanjay.gupta@example.com",
+    "previousPurchases": 3,
+    "lifetimeValue": 14200,
+    "lastPurchaseDate": "2026-06-19",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c018",
+    "name": "Meera Nambiar",
+    "email": "meera.nambiar@example.com",
+    "previousPurchases": 2,
+    "lifetimeValue": 10500,
+    "lastPurchaseDate": "2026-07-08",
+    "customerSegment": "returning"
+  },
+  {
+    "id": "c019",
+    "name": "Aditya Bhatt",
+    "email": "aditya.bhatt@example.com",
+    "previousPurchases": 5,
+    "lifetimeValue": 27800,
+    "lastPurchaseDate": "2026-08-03",
+    "customerSegment": "vip"
+  },
+  {
+    "id": "c020",
+    "name": "Lakshmi Krishnan",
+    "email": "lakshmi.krishnan@example.com",
+    "previousPurchases": 1,
+    "lifetimeValue": 3900,
+    "lastPurchaseDate": "2026-04-29",
+    "customerSegment": "new"
+  }
+]

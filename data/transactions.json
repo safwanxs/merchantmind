@@ -1,0 +1,247 @@
+[
+  {
+    "id": "t001",
+    "customerId": "c001",
+    "productName": "Wireless Earbuds Pro",
+    "cartValue": 4999,
+    "status": "abandoned",
+    "createdAt": "2026-08-20"
+  },
+  {
+    "id": "t002",
+    "customerId": "c003",
+    "productName": "Leather Laptop Bag",
+    "cartValue": 6499,
+    "status": "abandoned",
+    "createdAt": "2026-08-21"
+  },
+  {
+    "id": "t003",
+    "customerId": "c006",
+    "productName": "4K Action Camera",
+    "cartValue": 8999,
+    "status": "abandoned",
+    "createdAt": "2026-08-19"
+  },
+  {
+    "id": "t004",
+    "customerId": "c007",
+    "productName": "Home Theater Soundbar",
+    "cartValue": 9999,
+    "status": "abandoned",
+    "createdAt": "2026-08-22"
+  },
+  {
+    "id": "t005",
+    "customerId": "c010",
+    "productName": "Bluetooth Speaker",
+    "cartValue": 2999,
+    "status": "abandoned",
+    "createdAt": "2026-08-18"
+  },
+  {
+    "id": "t006",
+    "customerId": "c012",
+    "productName": "Noise Cancelling Headphones",
+    "cartValue": 7499,
+    "status": "abandoned",
+    "createdAt": "2026-08-23"
+  },
+  {
+    "id": "t007",
+    "customerId": "c015",
+    "productName": "Ergonomic Office Chair",
+    "cartValue": 6999,
+    "status": "abandoned",
+    "createdAt": "2026-08-17"
+  },
+  {
+    "id": "t008",
+    "customerId": "c017",
+    "productName": "Mechanical Keyboard",
+    "cartValue": 3499,
+    "status": "abandoned",
+    "createdAt": "2026-08-16"
+  },
+  {
+    "id": "t009",
+    "customerId": "c019",
+    "productName": "Portable SSD 1TB",
+    "cartValue": 5499,
+    "status": "abandoned",
+    "createdAt": "2026-08-24"
+  },
+  {
+    "id": "t010",
+    "customerId": "c002",
+    "productName": "Yoga Mat Premium",
+    "cartValue": 1499,
+    "status": "abandoned",
+    "createdAt": "2026-08-15"
+  },
+  {
+    "id": "t011",
+    "customerId": "c005",
+    "productName": "Air Fryer XL",
+    "cartValue": 4299,
+    "status": "abandoned",
+    "createdAt": "2026-08-14"
+  },
+  {
+    "id": "t012",
+    "customerId": "c009",
+    "productName": "Running Shoes",
+    "cartValue": 3799,
+    "status": "abandoned",
+    "createdAt": "2026-08-13"
+  },
+  {
+    "id": "t013",
+    "customerId": "c013",
+    "productName": "Smart LED Desk Lamp",
+    "cartValue": 1899,
+    "status": "abandoned",
+    "createdAt": "2026-08-12"
+  },
+  {
+    "id": "t014",
+    "customerId": "c018",
+    "productName": "Digital Weighing Scale",
+    "cartValue": 1299,
+    "status": "abandoned",
+    "createdAt": "2026-08-11"
+  },
+  {
+    "id": "t015",
+    "customerId": "c020",
+    "productName": "Ceramic Dinner Set",
+    "cartValue": 2499,
+    "status": "abandoned",
+    "createdAt": "2026-08-10"
+  },
+  {
+    "id": "t016",
+    "customerId": "c004",
+    "productName": "Travel Backpack",
+    "cartValue": 3299,
+    "status": "payment_failed",
+    "createdAt": "2026-08-22",
+    "paymentFailureReason": "card_declined"
+  },
+  {
+    "id": "t017",
+    "customerId": "c008",
+    "productName": "Electric Kettle",
+    "cartValue": 1599,
+    "status": "payment_failed",
+    "createdAt": "2026-08-21",
+    "paymentFailureReason": "insufficient_funds"
+  },
+  {
+    "id": "t018",
+    "customerId": "c011",
+    "productName": "Sunglasses Polarized",
+    "cartValue": 2199,
+    "status": "payment_failed",
+    "createdAt": "2026-08-20",
+    "paymentFailureReason": "bank_server_timeout"
+  },
+  {
+    "id": "t019",
+    "customerId": "c014",
+    "productName": "Smart Fitness Band",
+    "cartValue": 3999,
+    "status": "payment_failed",
+    "createdAt": "2026-08-19",
+    "paymentFailureReason": "otp_expired"
+  },
+  {
+    "id": "t020",
+    "customerId": "c016",
+    "productName": "Stainless Steel Cookware Set",
+    "cartValue": 5999,
+    "status": "payment_failed",
+    "createdAt": "2026-08-18",
+    "paymentFailureReason": "network_error"
+  },
+  {
+    "id": "t021",
+    "customerId": "c001",
+    "productName": "Smart Fitness Band",
+    "cartValue": 2999,
+    "status": "completed",
+    "createdAt": "2026-07-10"
+  },
+  {
+    "id": "t022",
+    "customerId": "c003",
+    "productName": "Noise Cancelling Headphones",
+    "cartValue": 7499,
+    "status": "completed",
+    "createdAt": "2026-07-28"
+  },
+  {
+    "id": "t023",
+    "customerId": "c006",
+    "productName": "Yoga Mat Premium",
+    "cartValue": 1499,
+    "status": "completed",
+    "createdAt": "2026-08-02"
+  },
+  {
+    "id": "t024",
+    "customerId": "c007",
+    "productName": "Ergonomic Office Chair",
+    "cartValue": 6999,
+    "status": "completed",
+    "createdAt": "2026-08-08"
+  },
+  {
+    "id": "t025",
+    "customerId": "c010",
+    "productName": "Bluetooth Speaker",
+    "cartValue": 2999,
+    "status": "completed",
+    "createdAt": "2026-06-25"
+  },
+  {
+    "id": "t026",
+    "customerId": "c012",
+    "productName": "4K Action Camera",
+    "cartValue": 8999,
+    "status": "completed",
+    "createdAt": "2026-08-14"
+  },
+  {
+    "id": "t027",
+    "customerId": "c015",
+    "productName": "Running Shoes",
+    "cartValue": 3799,
+    "status": "completed",
+    "createdAt": "2026-07-27"
+  },
+  {
+    "id": "t028",
+    "customerId": "c017",
+    "productName": "Portable SSD 1TB",
+    "cartValue": 5499,
+    "status": "completed",
+    "createdAt": "2026-06-15"
+  },
+  {
+    "id": "t029",
+    "customerId": "c019",
+    "productName": "Home Theater Soundbar",
+    "cartValue": 9999,
+    "status": "completed",
+    "createdAt": "2026-08-01"
+  },
+  {
+    "id": "t030",
+    "customerId": "c002",
+    "productName": "Air Fryer XL",
+    "cartValue": 4299,
+    "status": "completed",
+    "createdAt": "2026-05-30"
+  }
+]

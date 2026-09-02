@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --canvas: #f6f5f2;
+  --surface: #ffffff;
+  --ink: #14181f;
+  --muted: #6b7280;
+  --border: #e4e2dc;
+  --brand: #2c2a7c;
+  --brand-ink: #ffffff;
+  --success: #1f7a4d;
+  --success-bg: #e9f5ee;
+  --pending: #9a6a12;
+  --pending-bg: #fbf1de;
+  --danger: #b3261e;
+  --danger-bg: #fbeae9;
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
