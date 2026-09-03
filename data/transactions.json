@@ -32,7 +32,7 @@
     "productName": "Wireless Earbuds Pro",
     "productCategory": "Electronics",
     "cartValue": 4999,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "paymentFailureReason": "bank_server_timeout",
     "createdAt": "2026-08-22"
   },
@@ -60,7 +60,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-03",
     "paymentFailureReason": "card_declined"
   },
@@ -70,7 +70,7 @@
     "productName": "Leather Wallet Classic",
     "productCategory": "Accessories",
     "cartValue": 1299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-11",
     "paymentFailureReason": "network_error"
   },
@@ -134,7 +134,7 @@
     "productName": "Portable SSD 1TB",
     "productCategory": "Electronics",
     "cartValue": 8248,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-09",
     "paymentFailureReason": "card_declined"
   },
@@ -261,7 +261,7 @@
     "productName": "Mindfulness Journal",
     "productCategory": "Books",
     "cartValue": 719,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-17",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -352,7 +352,7 @@
     "productName": "Mechanical Keyboard",
     "productCategory": "Electronics",
     "cartValue": 4198,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-14",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -407,7 +407,7 @@
     "productName": "Skincare Routine Bundle",
     "productCategory": "Beauty",
     "cartValue": 3598,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-25",
     "paymentFailureReason": "network_error"
   },
@@ -543,7 +543,7 @@
     "productName": "Premium Denim Jacket",
     "productCategory": "Fashion",
     "cartValue": 6748,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-13",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -679,7 +679,7 @@
     "productName": "Tech Organizer Pouch",
     "productCategory": "Accessories",
     "cartValue": 1098,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-10",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -743,7 +743,7 @@
     "productName": "Tech Organizer Pouch",
     "productCategory": "Accessories",
     "cartValue": 899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-15",
     "paymentFailureReason": "otp_expired"
   },
@@ -816,7 +816,7 @@
     "productName": "Hardcover Collector Sci-Fi",
     "productCategory": "Books",
     "cartValue": 1299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-05",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -952,7 +952,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1428,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-12",
     "paymentFailureReason": "otp_expired"
   },
@@ -1007,7 +1007,7 @@
     "productName": "Ultrabook Charger",
     "productCategory": "Electronics",
     "cartValue": 1799,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-03",
     "paymentFailureReason": "card_declined"
   },
@@ -1089,7 +1089,7 @@
     "productName": "Air Fryer XL",
     "productCategory": "Home & Living",
     "cartValue": 5158,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-21",
     "paymentFailureReason": "network_error"
   },
@@ -1099,7 +1099,7 @@
     "productName": "Noise Cancelling Headphones",
     "productCategory": "Electronics",
     "cartValue": 7499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-23",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -1109,7 +1109,7 @@
     "productName": "Designer Watch",
     "productCategory": "Fashion",
     "cartValue": 9898,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-19",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -1227,7 +1227,7 @@
     "productName": "Wireless Charging Pad",
     "productCategory": "Accessories",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-09",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -1363,7 +1363,7 @@
     "productName": "Bluetooth Speaker",
     "productCategory": "Electronics",
     "cartValue": 2249,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-03",
     "paymentFailureReason": "authentication_failed"
   },
@@ -1454,7 +1454,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-23",
     "paymentFailureReason": "network_error"
   },
@@ -1500,7 +1500,7 @@
     "productName": "Yoga Mat Premium",
     "productCategory": "Sports",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-27",
     "paymentFailureReason": "network_error"
   },
@@ -1564,7 +1564,7 @@
     "productName": "Sunglasses Polarized",
     "productCategory": "Fashion",
     "cartValue": 2199,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-19",
     "paymentFailureReason": "authentication_failed"
   },
@@ -1637,7 +1637,7 @@
     "productName": "Yoga Mat Premium",
     "productCategory": "Sports",
     "cartValue": 2248,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-14",
     "paymentFailureReason": "otp_expired"
   },
@@ -1737,7 +1737,7 @@
     "productName": "Adjustable Dumbbell Set",
     "productCategory": "Sports",
     "cartValue": 7999,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-20",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -1774,7 +1774,7 @@
     "productName": "Skincare Routine Bundle",
     "productCategory": "Beauty",
     "cartValue": 2999,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-04",
     "paymentFailureReason": "otp_expired"
   },
@@ -1892,7 +1892,7 @@
     "productName": "Ceramic Dinner Set",
     "productCategory": "Home & Living",
     "cartValue": 2249,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-22",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -1911,7 +1911,7 @@
     "productName": "Ergonomic Office Chair",
     "productCategory": "Home & Living",
     "cartValue": 6299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-23",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -1930,7 +1930,7 @@
     "productName": "Home Theater Soundbar",
     "productCategory": "Electronics",
     "cartValue": 9999,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-02",
     "paymentFailureReason": "card_declined"
   },
@@ -2048,7 +2048,7 @@
     "productName": "Organic Honey & Spices Box",
     "productCategory": "Groceries",
     "cartValue": 1799,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-26",
     "paymentFailureReason": "authentication_failed"
   },
@@ -2067,7 +2067,7 @@
     "productName": "Mechanical Keyboard",
     "productCategory": "Electronics",
     "cartValue": 3848,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-06",
     "paymentFailureReason": "otp_expired"
   },
@@ -2104,7 +2104,7 @@
     "productName": "Sunglasses Polarized",
     "productCategory": "Fashion",
     "cartValue": 2638,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-03",
     "paymentFailureReason": "card_declined"
   },
@@ -2186,7 +2186,7 @@
     "productName": "Sunglasses Polarized",
     "productCategory": "Fashion",
     "cartValue": 2199,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-27",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -2295,7 +2295,7 @@
     "productName": "Adjustable Dumbbell Set",
     "productCategory": "Sports",
     "cartValue": 7199,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-22",
     "paymentFailureReason": "otp_expired"
   },
@@ -2413,7 +2413,7 @@
     "productName": "Hardcover Collector Sci-Fi",
     "productCategory": "Books",
     "cartValue": 1428,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-12",
     "paymentFailureReason": "otp_expired"
   },
@@ -2459,7 +2459,7 @@
     "productName": "Air Fryer XL",
     "productCategory": "Home & Living",
     "cartValue": 5158,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-06",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -2505,7 +2505,7 @@
     "productName": "Running Shoes",
     "productCategory": "Fashion",
     "cartValue": 5698,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-14",
     "paymentFailureReason": "otp_expired"
   },
@@ -2569,7 +2569,7 @@
     "productName": "Hardcover Collector Sci-Fi",
     "productCategory": "Books",
     "cartValue": 1948,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-01",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -2597,7 +2597,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-28",
     "paymentFailureReason": "network_error"
   },
@@ -2607,7 +2607,7 @@
     "productName": "Hydration Water Bottle",
     "productCategory": "Sports",
     "cartValue": 899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-09",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -2617,7 +2617,7 @@
     "productName": "Hardcover Collector Sci-Fi",
     "productCategory": "Books",
     "cartValue": 1299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-25",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -2645,7 +2645,7 @@
     "productName": "Organic Face Serum",
     "productCategory": "Beauty",
     "cartValue": 1918,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-28",
     "paymentFailureReason": "otp_expired"
   },
@@ -2745,7 +2745,7 @@
     "productName": "Travel Backpack",
     "productCategory": "Fashion",
     "cartValue": 2969,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-19",
     "paymentFailureReason": "otp_expired"
   },
@@ -2872,7 +2872,7 @@
     "productName": "4K Action Camera",
     "productCategory": "Electronics",
     "cartValue": 10798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-04",
     "paymentFailureReason": "otp_expired"
   },
@@ -2945,7 +2945,7 @@
     "productName": "Mechanical Keyboard",
     "productCategory": "Electronics",
     "cartValue": 3848,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-11",
     "paymentFailureReason": "authentication_failed"
   },
@@ -2955,7 +2955,7 @@
     "productName": "Leather Laptop Bag",
     "productCategory": "Fashion",
     "cartValue": 5849,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-22",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -2965,7 +2965,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1428,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-03",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -3011,7 +3011,7 @@
     "productName": "Artisanal Coffee Beans 1kg",
     "productCategory": "Groceries",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-03",
     "paymentFailureReason": "authentication_failed"
   },
@@ -3057,7 +3057,7 @@
     "productName": "Tech Organizer Pouch",
     "productCategory": "Accessories",
     "cartValue": 1198,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-03",
     "paymentFailureReason": "otp_expired"
   },
@@ -3121,7 +3121,7 @@
     "productName": "Smart LED Desk Lamp",
     "productCategory": "Home & Living",
     "cartValue": 1899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-24",
     "paymentFailureReason": "card_declined"
   },
@@ -3149,7 +3149,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1948,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-05",
     "paymentFailureReason": "card_declined"
   },
@@ -3159,7 +3159,7 @@
     "productName": "Ultrabook Charger",
     "productCategory": "Electronics",
     "cartValue": 2398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-16",
     "paymentFailureReason": "authentication_failed"
   },
@@ -3178,7 +3178,7 @@
     "productName": "Business & Leadership Pack",
     "productCategory": "Books",
     "cartValue": 2848,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-25",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -3188,7 +3188,7 @@
     "productName": "Hydration Water Bottle",
     "productCategory": "Sports",
     "cartValue": 1078,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-05",
     "paymentFailureReason": "network_error"
   },
@@ -3288,7 +3288,7 @@
     "productName": "Adjustable Dumbbell Set",
     "productCategory": "Sports",
     "cartValue": 7999,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-06",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -3388,7 +3388,7 @@
     "productName": "Wireless Charging Pad",
     "productCategory": "Accessories",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-07",
     "paymentFailureReason": "authentication_failed"
   },
@@ -3425,7 +3425,7 @@
     "productName": "Mindfulness Journal",
     "productCategory": "Books",
     "cartValue": 719,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-21",
     "paymentFailureReason": "authentication_failed"
   },
@@ -3489,7 +3489,7 @@
     "productName": "Ergonomic Office Chair",
     "productCategory": "Home & Living",
     "cartValue": 10498,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-07",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -3553,7 +3553,7 @@
     "productName": "Adjustable Dumbbell Set",
     "productCategory": "Sports",
     "cartValue": 8798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-15",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -3563,7 +3563,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1169,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-20",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -3663,7 +3663,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1438,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-01",
     "paymentFailureReason": "otp_expired"
   },
@@ -3700,7 +3700,7 @@
     "productName": "Hardcover Collector Sci-Fi",
     "productCategory": "Books",
     "cartValue": 1299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-19",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -3755,7 +3755,7 @@
     "productName": "Sunglasses Polarized",
     "productCategory": "Fashion",
     "cartValue": 2638,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-20",
     "paymentFailureReason": "network_error"
   },
@@ -3783,7 +3783,7 @@
     "productName": "Business & Leadership Pack",
     "productCategory": "Books",
     "cartValue": 2848,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-25",
     "paymentFailureReason": "otp_expired"
   },
@@ -3838,7 +3838,7 @@
     "productName": "Mindfulness Journal",
     "productCategory": "Books",
     "cartValue": 1198,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-12",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -3848,7 +3848,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1199,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-22",
     "paymentFailureReason": "authentication_failed"
   },
@@ -3957,7 +3957,7 @@
     "productName": "Organic Face Serum",
     "productCategory": "Beauty",
     "cartValue": 1439,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-09",
     "paymentFailureReason": "authentication_failed"
   },
@@ -3976,7 +3976,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1169,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-09",
     "paymentFailureReason": "otp_expired"
   },
@@ -4022,7 +4022,7 @@
     "productName": "Wireless Charging Pad",
     "productCategory": "Accessories",
     "cartValue": 1499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-12",
     "paymentFailureReason": "card_declined"
   },
@@ -4041,7 +4041,7 @@
     "productName": "Hydration Water Bottle",
     "productCategory": "Sports",
     "cartValue": 1078,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-19",
     "paymentFailureReason": "otp_expired"
   },
@@ -4114,7 +4114,7 @@
     "productName": "Hair Dryer Professional",
     "productCategory": "Beauty",
     "cartValue": 5998,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-13",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -4133,7 +4133,7 @@
     "productName": "Organic Face Serum",
     "productCategory": "Beauty",
     "cartValue": 2398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-02",
     "paymentFailureReason": "card_declined"
   },
@@ -4251,7 +4251,7 @@
     "productName": "Ergonomic Office Chair",
     "productCategory": "Home & Living",
     "cartValue": 10498,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-01",
     "paymentFailureReason": "authentication_failed"
   },
@@ -4324,7 +4324,7 @@
     "productName": "Adjustable Dumbbell Set",
     "productCategory": "Sports",
     "cartValue": 9598,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-14",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -4343,7 +4343,7 @@
     "productName": "Organic Face Serum",
     "productCategory": "Beauty",
     "cartValue": 2398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-14",
     "paymentFailureReason": "card_declined"
   },
@@ -4389,7 +4389,7 @@
     "productName": "Organic Honey & Spices Box",
     "productCategory": "Groceries",
     "cartValue": 2398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-02",
     "paymentFailureReason": "card_declined"
   },
@@ -4525,7 +4525,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1079,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-17",
     "paymentFailureReason": "authentication_failed"
   },
@@ -4625,7 +4625,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1438,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-06",
     "paymentFailureReason": "network_error"
   },
@@ -4662,7 +4662,7 @@
     "productName": "Organic Honey & Spices Box",
     "productCategory": "Groceries",
     "cartValue": 1799,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-10",
     "paymentFailureReason": "network_error"
   },
@@ -4708,7 +4708,7 @@
     "productName": "Smart LED Desk Lamp",
     "productCategory": "Home & Living",
     "cartValue": 2848,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-04",
     "paymentFailureReason": "card_declined"
   },
@@ -4880,7 +4880,7 @@
     "productName": "Leather Laptop Bag",
     "productCategory": "Fashion",
     "cartValue": 7148,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-21",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -4890,7 +4890,7 @@
     "productName": "Running Shoes",
     "productCategory": "Fashion",
     "cartValue": 4558,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-18",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -5044,7 +5044,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1428,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-08",
     "paymentFailureReason": "otp_expired"
   },
@@ -5063,7 +5063,7 @@
     "productName": "Travel Backpack",
     "productCategory": "Fashion",
     "cartValue": 3958,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-02",
     "paymentFailureReason": "network_error"
   },
@@ -5073,7 +5073,7 @@
     "productName": "Mindfulness Journal",
     "productCategory": "Books",
     "cartValue": 719,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-17",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -5092,7 +5092,7 @@
     "productName": "Business & Leadership Pack",
     "productCategory": "Books",
     "cartValue": 2848,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-23",
     "paymentFailureReason": "otp_expired"
   },
@@ -5201,7 +5201,7 @@
     "productName": "Air Fryer XL",
     "productCategory": "Home & Living",
     "cartValue": 6448,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-10",
     "paymentFailureReason": "card_declined"
   },
@@ -5328,7 +5328,7 @@
     "productName": "Mindfulness Journal",
     "productCategory": "Books",
     "cartValue": 719,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-10",
     "paymentFailureReason": "network_error"
   },
@@ -5473,7 +5473,7 @@
     "productName": "Air Fryer XL",
     "productCategory": "Home & Living",
     "cartValue": 5158,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-02",
     "paymentFailureReason": "otp_expired"
   },
@@ -5483,7 +5483,7 @@
     "productName": "Travel Backpack",
     "productCategory": "Fashion",
     "cartValue": 3958,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-20",
     "paymentFailureReason": "network_error"
   },
@@ -5511,7 +5511,7 @@
     "productName": "Wireless Charging Pad",
     "productCategory": "Accessories",
     "cartValue": 1499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-20",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -5620,7 +5620,7 @@
     "productName": "Artisanal Coffee Beans 1kg",
     "productCategory": "Groceries",
     "cartValue": 1499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-11",
     "paymentFailureReason": "network_error"
   },
@@ -5648,7 +5648,7 @@
     "productName": "Yoga Mat Premium",
     "productCategory": "Sports",
     "cartValue": 1648,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-08",
     "paymentFailureReason": "authentication_failed"
   },
@@ -5757,7 +5757,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1428,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-26",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -5875,7 +5875,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-28",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -5894,7 +5894,7 @@
     "productName": "MagSafe Power Bank",
     "productCategory": "Accessories",
     "cartValue": 2499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-01",
     "paymentFailureReason": "card_declined"
   },
@@ -5985,7 +5985,7 @@
     "productName": "Perfume Eau de Parfum",
     "productCategory": "Beauty",
     "cartValue": 4499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-05",
     "paymentFailureReason": "card_declined"
   },
@@ -5995,7 +5995,7 @@
     "productName": "Hair Dryer Professional",
     "productCategory": "Beauty",
     "cartValue": 4398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-19",
     "paymentFailureReason": "network_error"
   },
@@ -6005,7 +6005,7 @@
     "productName": "Organic Honey & Spices Box",
     "productCategory": "Groceries",
     "cartValue": 2398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-25",
     "paymentFailureReason": "network_error"
   },
@@ -6168,7 +6168,7 @@
     "productName": "Mindfulness Journal",
     "productCategory": "Books",
     "cartValue": 958,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-07",
     "paymentFailureReason": "authentication_failed"
   },
@@ -6304,7 +6304,7 @@
     "productName": "Hair Dryer Professional",
     "productCategory": "Beauty",
     "cartValue": 5998,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-19",
     "paymentFailureReason": "card_declined"
   },
@@ -6377,7 +6377,7 @@
     "productName": "4K Action Camera",
     "productCategory": "Electronics",
     "cartValue": 10798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-11",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -6441,7 +6441,7 @@
     "productName": "Perfume Eau de Parfum",
     "productCategory": "Beauty",
     "cartValue": 7498,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-22",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -6451,7 +6451,7 @@
     "productName": "Leather Laptop Bag",
     "productCategory": "Fashion",
     "cartValue": 7798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-10",
     "paymentFailureReason": "card_declined"
   },
@@ -6488,7 +6488,7 @@
     "productName": "Leather Laptop Bag",
     "productCategory": "Fashion",
     "cartValue": 6499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-17",
     "paymentFailureReason": "otp_expired"
   },
@@ -6579,7 +6579,7 @@
     "productName": "Hair Dryer Professional",
     "productCategory": "Beauty",
     "cartValue": 5998,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-15",
     "paymentFailureReason": "authentication_failed"
   },
@@ -6643,7 +6643,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1558,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-10",
     "paymentFailureReason": "authentication_failed"
   },
@@ -6680,7 +6680,7 @@
     "productName": "Ergonomic Office Chair",
     "productCategory": "Home & Living",
     "cartValue": 6999,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-10",
     "paymentFailureReason": "card_declined"
   },
@@ -6726,7 +6726,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1558,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-21",
     "paymentFailureReason": "authentication_failed"
   },
@@ -6799,7 +6799,7 @@
     "productName": "Travel Backpack",
     "productCategory": "Fashion",
     "cartValue": 3958,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-04",
     "paymentFailureReason": "card_declined"
   },
@@ -6854,7 +6854,7 @@
     "productName": "Running Shoes",
     "productCategory": "Fashion",
     "cartValue": 3419,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-26",
     "paymentFailureReason": "network_error"
   },
@@ -6873,7 +6873,7 @@
     "productName": "Hydration Water Bottle",
     "productCategory": "Sports",
     "cartValue": 899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-25",
     "paymentFailureReason": "network_error"
   },
@@ -6991,7 +6991,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-16",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -7010,7 +7010,7 @@
     "productName": "Designer Watch",
     "productCategory": "Fashion",
     "cartValue": 8099,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-16",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -7119,7 +7119,7 @@
     "productName": "Designer Watch",
     "productCategory": "Fashion",
     "cartValue": 8099,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-04",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -7129,7 +7129,7 @@
     "productName": "Yoga Mat Premium",
     "productCategory": "Sports",
     "cartValue": 1798,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-14",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -7184,7 +7184,7 @@
     "productName": "Skincare Routine Bundle",
     "productCategory": "Beauty",
     "cartValue": 4498,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-16",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -7212,7 +7212,7 @@
     "productName": "Air Fryer XL",
     "productCategory": "Home & Living",
     "cartValue": 6448,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-19",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -7366,7 +7366,7 @@
     "productName": "Premium Denim Jacket",
     "productCategory": "Fashion",
     "cartValue": 4499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-13",
     "paymentFailureReason": "otp_expired"
   },
@@ -7394,7 +7394,7 @@
     "productName": "Business & Leadership Pack",
     "productCategory": "Books",
     "cartValue": 2278,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-27",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -7404,7 +7404,7 @@
     "productName": "Running Shoes",
     "productCategory": "Fashion",
     "cartValue": 4558,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-27",
     "paymentFailureReason": "otp_expired"
   },
@@ -7540,7 +7540,7 @@
     "productName": "Tech Organizer Pouch",
     "productCategory": "Accessories",
     "cartValue": 1198,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-09",
     "paymentFailureReason": "card_declined"
   },
@@ -7595,7 +7595,7 @@
     "productName": "Resistance Band Kit",
     "productCategory": "Sports",
     "cartValue": 1318,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-09",
     "paymentFailureReason": "network_error"
   },
@@ -7650,7 +7650,7 @@
     "productName": "Ergonomic Office Chair",
     "productCategory": "Home & Living",
     "cartValue": 10498,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-19",
     "paymentFailureReason": "network_error"
   },
@@ -7678,7 +7678,7 @@
     "productName": "Air Fryer XL",
     "productCategory": "Home & Living",
     "cartValue": 3869,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-23",
     "paymentFailureReason": "otp_expired"
   },
@@ -7697,7 +7697,7 @@
     "productName": "Ergonomic Office Chair",
     "productCategory": "Home & Living",
     "cartValue": 6299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-10",
     "paymentFailureReason": "card_declined"
   },
@@ -7725,7 +7725,7 @@
     "productName": "Running Shoes",
     "productCategory": "Fashion",
     "cartValue": 4558,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-24",
     "paymentFailureReason": "authentication_failed"
   },
@@ -7771,7 +7771,7 @@
     "productName": "Organic Honey & Spices Box",
     "productCategory": "Groceries",
     "cartValue": 1799,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-16",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -7799,7 +7799,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1948,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-12",
     "paymentFailureReason": "network_error"
   },
@@ -7818,7 +7818,7 @@
     "productName": "Travel Backpack",
     "productCategory": "Fashion",
     "cartValue": 3628,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-24",
     "paymentFailureReason": "authentication_failed"
   },
@@ -7846,7 +7846,7 @@
     "productName": "Organic Honey & Spices Box",
     "productCategory": "Groceries",
     "cartValue": 2398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-24",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -7955,7 +7955,7 @@
     "productName": "Artisanal Coffee Beans 1kg",
     "productCategory": "Groceries",
     "cartValue": 2248,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-22",
     "paymentFailureReason": "network_error"
   },
@@ -8046,7 +8046,7 @@
     "productName": "Sunglasses Polarized",
     "productCategory": "Fashion",
     "cartValue": 1979,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-12",
     "paymentFailureReason": "authentication_failed"
   },
@@ -8065,7 +8065,7 @@
     "productName": "Adjustable Dumbbell Set",
     "productCategory": "Sports",
     "cartValue": 7199,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-15",
     "paymentFailureReason": "card_declined"
   },
@@ -8093,7 +8093,7 @@
     "productName": "Smart LED Desk Lamp",
     "productCategory": "Home & Living",
     "cartValue": 2278,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-15",
     "paymentFailureReason": "card_declined"
   },
@@ -8130,7 +8130,7 @@
     "productName": "Yoga Mat Premium",
     "productCategory": "Sports",
     "cartValue": 1648,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-20",
     "paymentFailureReason": "authentication_failed"
   },
@@ -8140,7 +8140,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1299,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-20",
     "paymentFailureReason": "authentication_failed"
   },
@@ -8222,7 +8222,7 @@
     "productName": "Sunglasses Polarized",
     "productCategory": "Fashion",
     "cartValue": 2638,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-03",
     "paymentFailureReason": "card_declined"
   },
@@ -8232,7 +8232,7 @@
     "productName": "Smart LED Desk Lamp",
     "productCategory": "Home & Living",
     "cartValue": 1899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-12",
     "paymentFailureReason": "network_error"
   },
@@ -8269,7 +8269,7 @@
     "productName": "Yoga Mat Premium",
     "productCategory": "Sports",
     "cartValue": 2248,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-04",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -8333,7 +8333,7 @@
     "productName": "Business & Leadership Pack",
     "productCategory": "Books",
     "cartValue": 1899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-11",
     "paymentFailureReason": "authentication_failed"
   },
@@ -8361,7 +8361,7 @@
     "productName": "Tech Organizer Pouch",
     "productCategory": "Accessories",
     "cartValue": 1498,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-04",
     "paymentFailureReason": "card_declined"
   },
@@ -8371,7 +8371,7 @@
     "productName": "Wireless Charging Pad",
     "productCategory": "Accessories",
     "cartValue": 2248,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-26",
     "paymentFailureReason": "otp_expired"
   },
@@ -8462,7 +8462,7 @@
     "productName": "Business & Leadership Pack",
     "productCategory": "Books",
     "cartValue": 1709,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-17",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -8508,7 +8508,7 @@
     "productName": "Travel Backpack",
     "productCategory": "Fashion",
     "cartValue": 2969,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-24",
     "paymentFailureReason": "otp_expired"
   },
@@ -8599,7 +8599,7 @@
     "productName": "Tech Organizer Pouch",
     "productCategory": "Accessories",
     "cartValue": 899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-19",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -8645,7 +8645,7 @@
     "productName": "Yoga Mat Premium",
     "productCategory": "Sports",
     "cartValue": 1499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-14",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -8700,7 +8700,7 @@
     "productName": "Leather Laptop Bag",
     "productCategory": "Fashion",
     "cartValue": 5849,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-13",
     "paymentFailureReason": "authentication_failed"
   },
@@ -8737,7 +8737,7 @@
     "productName": "Business & Leadership Pack",
     "productCategory": "Books",
     "cartValue": 2278,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-20",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -8756,7 +8756,7 @@
     "productName": "Premium Denim Jacket",
     "productCategory": "Fashion",
     "cartValue": 4499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-05",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -8784,7 +8784,7 @@
     "productName": "Ergonomic Office Chair",
     "productCategory": "Home & Living",
     "cartValue": 8398,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-11",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -8839,7 +8839,7 @@
     "productName": "Gourmet Tea Assortment",
     "productCategory": "Groceries",
     "cartValue": 1428,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-13",
     "paymentFailureReason": "otp_expired"
   },
@@ -8921,7 +8921,7 @@
     "productName": "MagSafe Power Bank",
     "productCategory": "Accessories",
     "cartValue": 2499,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-02",
     "paymentFailureReason": "insufficient_funds"
   },
@@ -9039,7 +9039,7 @@
     "productName": "Robot Vacuum Cleaner",
     "productCategory": "Home & Living",
     "cartValue": 22498,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-08-01",
     "paymentFailureReason": "bank_server_timeout"
   },
@@ -9058,7 +9058,7 @@
     "productName": "Smart LED Desk Lamp",
     "productCategory": "Home & Living",
     "cartValue": 1899,
-    "status": "failed_payment",
+    "status": "payment_failed",
     "createdAt": "2026-07-24",
     "paymentFailureReason": "otp_expired"
   },

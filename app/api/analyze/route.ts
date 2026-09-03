@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { runAnalysis, runDeterministicAnalysis } from "@/lib/ai";
 import type { ApiResponse, AnalysisResponse } from "@/lib/types";
-import customers from "@/data/customers.json";
-import transactions from "@/data/transactions.json";
-import type { Customer, Transaction } from "@/lib/types";
+import { customers, transactions } from "@/lib/validation";
 
 export async function POST(request: Request) {
   // Demo Scenarios control (Phase 8): "AI API Failure" forces the
@@ -19,8 +17,8 @@ export async function POST(request: Request) {
 
   try {
     const result = forceFallback
-      ? runDeterministicAnalysis(customers as Customer[], transactions as Transaction[])
-      : await runAnalysis(customers as Customer[], transactions as Transaction[]);
+      ? runDeterministicAnalysis(customers, transactions)
+      : await runAnalysis(customers, transactions);
 
     const body: ApiResponse<AnalysisResponse> = { success: true, data: result };
     return NextResponse.json(body);

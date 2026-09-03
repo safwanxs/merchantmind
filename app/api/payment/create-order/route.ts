@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getRazorpayClient } from "@/lib/razorpay";
 import { getTrustedOpportunityById } from "@/lib/ai";
 import { validateOpportunity } from "@/lib/guardrails";
+import { getApprovedIncentiveTotal, isOpportunityCompleted } from "@/lib/budget";
 import type { ApiResponse } from "@/lib/types";
 
 interface CreateOrderRequestBody {
@@ -35,6 +36,15 @@ export async function POST(request: Request) {
     return NextResponse.json(failure, { status: 400 });
   }
 
+  // Duplicate Execution Guard: Refuse if payment is already recorded for this opportunity
+  if (isOpportunityCompleted(opportunityId)) {
+    const failure: ApiResponse<never> = {
+      success: false,
+      error: "Payment already completed for this opportunity. Duplicate execution rejected.",
+    };
+    return NextResponse.json(failure, { status: 400 });
+  }
+
   // Look up trusted server-side opportunity & recalculate financial values
   const opportunity = getTrustedOpportunityById(opportunityId);
   if (!opportunity) {
@@ -45,8 +55,9 @@ export async function POST(request: Request) {
     return NextResponse.json(failure, { status: 404 });
   }
 
-  // Re-run guardrails server-side before order creation
-  const guardrailResult = validateOpportunity(opportunity);
+  // Re-run guardrails server-side using server-persisted budget total
+  const approvedIncentiveTotal = getApprovedIncentiveTotal();
+  const guardrailResult = validateOpportunity(opportunity, approvedIncentiveTotal);
   if (!guardrailResult.allowed) {
     const failure: ApiResponse<never> = {
       success: false,

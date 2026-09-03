@@ -30,8 +30,7 @@ import AuditTrail from "./AuditTrail";
 import RevenueImpactPanel from "./RevenueImpactPanel";
 import AgentActivity from "./AgentActivity";
 
-import rawCustomers from "@/data/customers.json";
-import rawTransactions from "@/data/transactions.json";
+import { customers as rawCustomers, transactions as rawTransactions } from "@/lib/validation";
 
 interface OppState {
   status: OpportunityWorkflowStatus;
@@ -50,9 +49,17 @@ export default function DashboardClient() {
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
   const [verifiedRecovered, setVerifiedRecovered] = useState(0);
 
-  // Load persisted audit history once, client-side only (localStorage).
+  // Load persisted audit history once, client-side only (localStorage), and fetch server budget total.
   useEffect(() => {
     setAuditLog(getAuditLog());
+    fetch("/api/budget")
+      .then((res) => res.json())
+      .then((body) => {
+        if (body.success && typeof body.data?.approvedIncentiveTotal === "number") {
+          setApprovedIncentiveTotal(body.data.approvedIncentiveTotal);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const guardrailLogged = useRef<Set<string>>(new Set());
@@ -122,6 +129,11 @@ export default function DashboardClient() {
 
   function handleApprove(opportunity: Opportunity) {
     setApprovedIncentiveTotal((prev) => prev + opportunity.recommendedDiscount);
+    fetch("/api/budget", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "approve", discount: opportunity.recommendedDiscount }),
+    }).catch(() => {});
     setOppStates((prev) => ({
       ...prev,
       [opportunity.id]: { ...prev[opportunity.id], status: "processing_payment" },
@@ -199,6 +211,11 @@ export default function DashboardClient() {
     });
 
     setApprovedIncentiveTotal((prev) => Math.max(0, prev - opportunity.recommendedDiscount));
+    fetch("/api/budget", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "rollback", discount: opportunity.recommendedDiscount }),
+    }).catch(() => {});
 
     setOppStates((prev) => ({
       ...prev,

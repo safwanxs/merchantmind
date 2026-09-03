@@ -6,8 +6,7 @@ import type {
   RecommendedAction,
   Transaction,
 } from "./types";
-import rawCustomers from "@/data/customers.json";
-import rawTransactions from "@/data/transactions.json";
+import { customers, transactions } from "./validation";
 
 // ---------------------------------------------------------------------------
 // Guardrail-adjacent constants used directly inside the analysis engine.
@@ -156,13 +155,12 @@ export function deriveOpportunity(
     const recommendedAction: RecommendedAction = isHighIntentReminder
       ? "payment_reminder"
       : "discount";
+    const historyDepth = Math.min(customer.previousPurchases, 8) / 8;
+    const confidence = Number((0.75 + historyDepth * 0.15).toFixed(2));
     const rawDiscount =
       recommendedAction === "discount" ? Math.min(200, txn.cartValue * MAX_DISCOUNT_PERCENT) : 0;
     const discount = clampDiscount(txn.cartValue, rawDiscount);
-    const expectedRecovery = txn.cartValue - discount;
-
-    const historyDepth = Math.min(customer.previousPurchases, 8) / 8;
-    const confidence = Number((0.75 + historyDepth * 0.15).toFixed(2));
+    const expectedRecovery = Math.round(confidence * (txn.cartValue - discount));
 
     const explanation = buildExplanation(customer, txn, recommendedAction, discount, confidence);
     const recommendationFactors = buildRecommendationFactors(customer, txn);
@@ -204,6 +202,7 @@ export function deriveOpportunity(
 
   if (txn.status === "payment_failed") {
     const confidence = 0.8;
+    const expectedRecovery = Math.round(confidence * txn.cartValue);
     const explanation = buildExplanation(customer, txn, "payment_retry_suggestion", 0, confidence);
     const recommendationFactors = buildRecommendationFactors(customer, txn);
     const { priorityScore, priorityLevel } = calculatePriorityScore(
@@ -230,7 +229,7 @@ export function deriveOpportunity(
       confidence,
       priorityScore,
       priorityLevel,
-      expectedRecovery: txn.cartValue,
+      expectedRecovery,
       reasoning: `Payment for ${customer.name}'s ₹${txn.cartValue.toLocaleString(
         "en-IN"
       )} order failed${
@@ -367,7 +366,7 @@ function validateAndSanitize(
       priorityScore,
       priorityLevel,
       // Always recomputed, never trusted from the model.
-      expectedRecovery: txn.cartValue - discount,
+      expectedRecovery: Math.round(confidence * (txn.cartValue - discount)),
       reasoning,
       explanation,
       recommendationFactors,
@@ -517,10 +516,10 @@ export async function runAnalysis(
  */
 export function getTrustedOpportunityById(opportunityId: string): Opportunity | null {
   const transactionId = opportunityId.replace(/^opp_/, "");
-  const txn = (rawTransactions as Transaction[]).find((t) => t.id === transactionId);
+  const txn = transactions.find((t) => t.id === transactionId);
   if (!txn) return null;
 
-  const customer = (rawCustomers as Customer[]).find((c) => c.id === txn.customerId);
+  const customer = customers.find((c) => c.id === txn.customerId);
   if (!customer) return null;
 
   return deriveOpportunity(customer, txn);

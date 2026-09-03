@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { getTrustedOpportunityById } from "@/lib/ai";
+import { recordCompletedOpportunity } from "@/lib/budget";
 import type { ApiResponse } from "@/lib/types";
 
 interface VerifyRequestBody {
@@ -76,6 +77,9 @@ export async function POST(request: Request) {
     };
     return NextResponse.json(failure, { status: 400 });
   }
+
+  // Record completion server-side to prevent duplicate executions
+  recordCompletedOpportunity(opportunityId);
 
   const verifiedAmount = opportunity.expectedRecovery;
 

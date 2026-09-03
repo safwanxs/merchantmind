@@ -33,7 +33,7 @@ export function calculateAIOpportunityValue(opportunities: Opportunity[]): numbe
 
 /**
  * Projected Recovery estimates expected recovery value from current AI opportunities.
- * Labeled clearly in UI as a model estimate based on expected recovery (cart value - discount).
+ * Labeled clearly in UI as a model-based probability-weighted estimate: confidence * (cartValue - discount).
  */
 export function calculateProjectedRecovery(opportunities: Opportunity[]): number {
   return opportunities.reduce((sum, o) => sum + o.expectedRecovery, 0);
