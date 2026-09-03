@@ -1,113 +1,178 @@
-# MerchantMind — Controlled AI Commerce Recovery Agent
+# MerchantMind: Controlled AI Commerce Recovery Agent
 
-> **"AI recommends. Guardrails constrain. The merchant decides."**
+> AI recommends. Guardrails constrain. The merchant decides.
 
-Built for **Razorpay AI Buildathon — Track 01: AI Growth & Agentic Commerce**.
+MerchantMind is an explainable revenue-recovery dashboard built for the **Razorpay AI Buildathon, Track 01: AI Growth & Agentic Commerce**. It finds high-intent abandoned carts and failed payments, explains each recommendation, validates the recommendation against financial policy, and requires merchant approval before any payment action.
 
-MerchantMind is a production-hardened, explainable AI commerce agent that identifies revenue recovery opportunities, explains its reasoning across multi-dimensional customer signals, enforces strict financial guardrails, requires explicit merchant approval, executes through server-verified Razorpay Test Mode orders, and maintains an immutable audit ledger.
+## What I Built
 
----
+### Revenue intelligence
 
-## 🏆 Product Positioning & Core Principles
+- Added a realistic dataset of **300 customers and 1,000 transactions**.
+- Classifies customers into VIP, high-value, returning, new, at-risk, and inactive segments.
+- Tracks product categories, customer lifetime value, previous purchases, average order value, activity recency, cart value, and payment-failure reasons.
+- Calculates Revenue at Risk, AI Targeted Opportunity, Projected Recovery, Verified Recovered Revenue, and Recovery Rate from the source data.
+- Shows dataset coverage and transaction-status breakdowns before analysis is run.
 
-MerchantMind is **NOT** a raw chatbot connected to a payment button. It is a controlled AI commerce agent built around eight core pillars:
+### AI analysis with a reliable fallback
 
-1. **OBSERVE** — Continuous analysis of abandoned carts and failed payment signals.
-2. **ANALYZE & REASON** — Plain-language reasoning explaining *Why This Customer?*, *Why This Action?*, and *Why This Amount?*.
-3. **LOWEST-COST ACTION STRATEGY** — Prefers zero-cost actions (Payment Reminders, Payment Retry Suggestions) before offering discounts.
-4. **GUARD** — Bounded financial execution enforced by an independent Guardrail Engine (5% cart cap, ₹500 discount ceiling, ₹5,000 budget cap).
-5. **APPROVE** — Strict human-in-the-loop sign-off required before any money-moving operation can reach Razorpay.
-6. **EXECUTE** — Server-side calculation of amounts (`opportunityId` payload only; client amounts are never trusted).
-7. **VERIFY** — Server-side HMAC signature and amount verification via Razorpay Test Mode.
-8. **AUDIT & REVENUE TRANSPARENCY** — Immutable append-only ledger tracking all actions with actor tags (`AI_AGENT`, `SYSTEM`, `MERCHANT`, `RAZORPAY`).
+- Added a provider abstraction for Gemini-backed analysis.
+- Added a deterministic rule-based engine so the dashboard still works without AI credentials.
+- Selects opportunities from abandoned carts above the high-value threshold and payment failures.
+- Uses customer history, cart value, lifetime value, segment, recency, and failure reason to calculate confidence and priority.
+- Enforces the lowest-cost action strategy: payment reminders and retry suggestions are preferred before discounts.
+- Sanitizes model output against real customer and transaction IDs, re-derives money values, clamps discounts, and rejects hallucinated records.
+- Displays structured explanations for **Why This Customer**, **Why This Action**, and **Why This Amount**.
 
----
+### Analytics dashboard
 
-## 🏗️ Technical Architecture
+- Added customer-segment analytics and segment-level opportunity summaries.
+- Added product-category and transaction-status visualizations.
+- Added priority, confidence, risk, recovery, and discount views for surfaced opportunities.
+- Added an agent decision-flow view showing Observe, Analyze, Guard, Approve, Execute, Verify, and Audit stages.
+- Added demo-mode state and scenario controls for repeatable presentations.
+
+### Guardrails and human approval
+
+The independent guardrail engine validates every opportunity before payment:
+
+- Minimum AI confidence: 70%.
+- Maximum discount: 5% of cart value.
+- Maximum individual discount: ₹500.
+- Maximum approved session incentive budget: ₹5,000.
+- Customer and transaction IDs must exist in the trusted dataset.
+- Action types must be policy-approved.
+- Merchant approval is required before order creation.
+
+Blocked, rejected, approved, processing, successful, and failed states are visible per opportunity. A failed payment stops the workflow and does not automatically retry.
+
+### Razorpay payment flow
+
+1. The browser sends only the trusted `opportunityId` to the server.
+2. The server looks up the opportunity and recalculates the final amount.
+3. The server re-runs guardrails and creates a Razorpay Test Mode order.
+4. Razorpay Checkout handles the payment.
+5. The server verifies the `sha256` HMAC signature using `RAZORPAY_KEY_SECRET`.
+6. Verified recovered revenue is updated only after signature and server-side amount checks pass.
+
+Client-provided amounts are never trusted, and the Razorpay secret never reaches the browser.
+
+### Audit and failure transparency
+
+- Added an append-only audit ledger persisted in browser local storage for the demo.
+- Records analysis, opportunity identification, guardrail checks, approvals, rejections, order creation, payment results, and stopped workflows.
+- Tags events with `AI_AGENT`, `SYSTEM`, `MERCHANT`, or `RAZORPAY` actors.
+- Includes a clear simulated AI-unavailable path and failed-payment scenario for demonstrating graceful degradation.
+
+## Architecture
 
 ```mermaid
 flowchart TD
-    A[Commerce Data / Transactions] --> B[AI / Fallback Engine]
-    B --> C[Surfaced Opportunities & Reasoning]
-    C --> D[Guardrail Engine Validation]
-    D -->|Passed| E[Merchant Approval Panel]
-    D -->|Blocked| F[Immutable Audit Log]
-    E -->|Approved| G[POST /api/payment/create-order]
-    G --> H[Razorpay Test Mode Checkout]
-    H --> I[POST /api/payment-status HMAC Verification]
-    I -->|Verified| J[Revenue Recovered Ledger & Audit Log]
-    I -->|Failed| K[Workflow Stopped & Audit Event]
+        A[Customers and transactions] --> B[Gemini or deterministic analysis]
+        B --> C[Sanitized opportunities and reasoning]
+        C --> D[Independent guardrails]
+        D -->|Blocked| E[Audit event]
+        D -->|Allowed| F[Merchant approval]
+        F -->|Approved| G[Server creates Razorpay order]
+        G --> H[Razorpay Test Mode Checkout]
+        H --> I[Server HMAC verification]
+        I -->|Verified| J[Recovered revenue and audit event]
+        I -->|Failed| K[Stop workflow and audit event]
 ```
 
----
+## Project Structure
 
-## 🔒 Security Architecture & Payment Guardrails
+```text
+app/
+    api/analyze/                    AI and deterministic analysis endpoint
+    api/payment/create-order/       Trusted Razorpay order creation
+    api/payment-status/             HMAC payment verification
+    dashboard/                      Main dashboard route
+components/dashboard/
+    AgentDecisionFlow.tsx           Agent lifecycle visualization
+    AgentAnalysis.tsx               Analysis controls and results
+    AnalyticsVisualizations.tsx     Revenue and transaction charts
+    CustomerSegmentAnalytics.tsx    Customer segment intelligence
+    DatasetOverview.tsx             Dataset coverage and status metrics
+    GuardrailPanel.tsx              Policy check results
+    ApprovalPanel.tsx               Merchant approval controls
+    PaymentModal.tsx                Razorpay checkout integration
+    AuditTrail.tsx                  Append-only event history
+lib/
+    ai.ts                           Provider, fallback, sanitization, recommendations
+    calculations.ts                 Metrics, priority scores, INR formatting
+    guardrails.ts                   Independent financial policy engine
+    audit.ts                        Local audit ledger
+    razorpay.ts                     Server-only Razorpay client
+    types.ts                        Shared domain and API contracts
+data/
+    customers.json                  300 customer records
+    transactions.json               1,000 transaction records
+```
 
-### 1. Server-Side Financial Source of Truth
-- **Client payload:** Client sends **only** `opportunityId`.
-- **Server calculation:** The server fetches the trusted transaction and customer, recalculates cart value, calculates discount, verifies guardrails, and sets the order amount. Client-supplied amounts are ignored.
+## Run Locally
 
-### 2. Multi-Layer Guardrail Engine
-- **Confidence Threshold:** $\ge 70\%$ AI confidence required.
-- **Max Discount %:** $\le 5\%$ of cart value.
-- **Max Discount Amount:** $\le ₹500$ INR ceiling.
-- **Campaign Budget:** Running session cap of $\le ₹5,000$ total incentive.
-- **Valid Opportunity & Customer:** Cross-referenced against dataset IDs.
-- **Valid Action Type:** Policy-checked action type (`discount`, `payment_reminder`, `payment_retry_suggestion`).
-- **Merchant Approval:** Mandatory sign-off flag.
+Install dependencies:
 
-### 3. Payment Verification
-- Server calculates `sha256` HMAC signature using `RAZORPAY_KEY_SECRET`.
-- Verification compares signature, order ID, payment ID, and matches the paid amount against server-calculated recovery value.
+```bash
+npm install
+```
 
----
+Copy the safe template and add your own local credentials:
 
-## 📊 Revenue Impact & Measurement Metrics
+```powershell
+Copy-Item .env.example .env.local
+```
 
-The dashboard calculates transparent metrics with zero artificial rate assumptions:
-
-- **Revenue At Risk:** Total cart value of abandoned carts and failed payments ($\sum \text{Cart Value}$).
-- **AI Targeted Opportunity:** Total value of AI-surfaced recovery opportunities.
-- **Projected Recovery:** Net estimated recovery ($\sum (\text{Cart Value} - \text{Incentive})$), labeled as a model estimate.
-- **Revenue Recovered:** Verified paid revenue (ONLY increases after successful server-side Razorpay signature & amount verification).
-- **Recovery Rate:** $(\text{Revenue Recovered} / \text{Revenue At Risk}) \times 100$.
-
----
-
-## 🚀 Environment Setup & Vercel Deployment
-
-### Required Environment Variables
-Create a `.env.local` file (never committed to Git):
+Then edit `.env.local`:
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=your_gemini_api_key
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
 
-### Local Setup
+Start the development server:
+
 ```bash
-npm install
 npm run dev
 ```
 
-### Production Build & Lint Checks
+Open [http://localhost:3000/dashboard](http://localhost:3000/dashboard).
+
+The deterministic fallback works without `GEMINI_API_KEY`. Razorpay order creation requires valid Razorpay Test Mode credentials.
+
+## API Endpoints
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/analyze` | Runs Gemini analysis or deterministic fallback. Use `{ "forceFallback": true }` for a predictable demo. |
+| `POST` | `/api/payment/create-order` | Validates `{ "opportunityId": "..." }` and creates a server-calculated Razorpay order. |
+| `POST` | `/api/payment-status` | Verifies Razorpay order ID, payment ID, signature, and trusted amount. |
+
+## Verification
+
+Run the production checks before deployment:
+
 ```bash
 npx tsc --noEmit
-npm run lint
 npm run build
 ```
 
----
+The production build currently compiles, passes lint/type validation, and generates all app routes successfully.
 
-## 🎥 5-Minute Technical Interview & Demo Flow
+## Demo Flow
 
-1. **Dashboard Overview:** View *Revenue At Risk*, *AI Targeted Opportunity*, and the *Controlled Agent Workflow*.
-2. **Run AI Analysis:** Trigger recovery analysis via Gemini API or automatic deterministic fallback.
-3. **Inspect Reasoning:** Expand top opportunity card to see structured *Why Customer*, *Why Action*, *Why Amount*, and *Estimated Net Revenue*.
-4. **Guardrail Engine Check:** Review all 8 automated financial guardrails passing.
-5. **Merchant Approval:** Click *Approve Action* and confirm sign-off.
-6. **Razorpay Checkout:** Open test checkout and complete payment.
-7. **Server-Side Verification:** Server verifies HMAC signature and updates *Verified Recovered Revenue* and the *Immutable Audit Trail*.
-8. **Graceful Failure UX:** Test *Failed Payment* scenario to verify workflow stops safely without auto-retry.
+1. Open the dashboard and review Revenue at Risk and dataset coverage.
+2. Choose a demo scenario and run analysis.
+3. Expand an opportunity to inspect recommendation factors and reasoning.
+4. Open the guardrail review and inspect each policy check.
+5. Approve or reject the action as the merchant.
+6. In a configured Razorpay Test Mode environment, complete Checkout and inspect server verification.
+7. Review the audit trail and verified revenue.
+8. Run the AI failure and failed-payment scenarios to show fallback behavior and workflow stopping.
+
+## Secret Handling
+
+Real API keys are intentionally **not committed to Git**. `.env.example` contains placeholders only, and `.env.local` is ignored by Git. Configure secrets locally or in the deployment provider's environment settings. If a real key was ever exposed publicly, revoke and rotate it immediately.
