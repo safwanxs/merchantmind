@@ -105,6 +105,147 @@ export function buildExplanation(
 }
 
 // ---------------------------------------------------------------------------
+// SINGLE SOURCE OF TRUTH for "is this transaction a real opportunity, and
+// what should be recommended for it?" Both the deterministic analysis
+// engine (what the merchant sees on the dashboard) and the server-side
+// trusted lookup (what actually gets charged at payment time) call this
+// same function. They can never diverge, because there is only one
+// implementation of the eligibility rule and the action it produces.
+//
+// Returns null when the transaction is not a real opportunity at all
+// (wrong status, below the high-value threshold, insufficient purchase
+// history) — this null is what lets the payment route refuse to create
+// an order for anything that was never actually surfaced to the merchant.
+// ---------------------------------------------------------------------------
+import { calculatePriorityScore, formatINR } from "./calculations";
+
+export function buildRecommendationFactors(customer: Customer, txn: Transaction): string[] {
+  const factors: string[] = [
+    `Customer completed ${customer.previousPurchases} previous purchase${customer.previousPurchases === 1 ? "" : "s"}.`,
+    `Customer lifetime value is ${formatINR(customer.lifetimeValue)}.`,
+  ];
+  if (customer.averageOrderValue && txn.cartValue >= customer.averageOrderValue) {
+    factors.push(`Cart value (${formatINR(txn.cartValue)}) is at or above their average order value (${formatINR(customer.averageOrderValue)}).`);
+  } else {
+    factors.push(`Cart value is ${formatINR(txn.cartValue)}.`);
+  }
+
+  if (txn.status === "abandoned") {
+    factors.push(`Abandonment occurred recently (${txn.createdAt}).`);
+  } else if (txn.status === "payment_failed") {
+    factors.push(`Payment failed due to ${txn.paymentFailureReason?.replace(/_/g, " ") || "technical reason"}.`);
+  }
+
+  const segmentLabel = customer.customerSegment.replace(/_/g, " ").toUpperCase();
+  factors.push(`Customer belongs to ${segmentLabel} segment.`);
+
+  return factors;
+}
+
+export function deriveOpportunity(
+  customer: Customer,
+  txn: Transaction
+): Opportunity | null {
+  if (txn.status === "abandoned") {
+    const isEligible =
+      txn.cartValue > MIN_ABANDONED_CART_VALUE &&
+      customer.previousPurchases >= MIN_PREVIOUS_PURCHASES;
+    if (!isEligible) return null;
+
+    const isHighIntentReminder = customer.previousPurchases >= 6;
+    const recommendedAction: RecommendedAction = isHighIntentReminder
+      ? "payment_reminder"
+      : "discount";
+    const rawDiscount =
+      recommendedAction === "discount" ? Math.min(200, txn.cartValue * MAX_DISCOUNT_PERCENT) : 0;
+    const discount = clampDiscount(txn.cartValue, rawDiscount);
+    const expectedRecovery = txn.cartValue - discount;
+
+    const historyDepth = Math.min(customer.previousPurchases, 8) / 8;
+    const confidence = Number((0.75 + historyDepth * 0.15).toFixed(2));
+
+    const explanation = buildExplanation(customer, txn, recommendedAction, discount, confidence);
+    const recommendationFactors = buildRecommendationFactors(customer, txn);
+    const { priorityScore, priorityLevel } = calculatePriorityScore(
+      txn.cartValue,
+      customer.lifetimeValue,
+      customer.previousPurchases,
+      confidence,
+      customer.customerSegment,
+      customer.lastActiveDays ?? 7
+    );
+
+    return {
+      id: `opp_${txn.id}`,
+      customerId: customer.id,
+      customerName: customer.name,
+      customerSegment: customer.customerSegment,
+      productCategory: txn.productCategory,
+      productName: txn.productName,
+      transactionId: txn.id,
+      problem: "abandoned_cart",
+      cartValue: txn.cartValue,
+      recommendedAction,
+      recommendedDiscount: discount,
+      confidence,
+      priorityScore,
+      priorityLevel,
+      expectedRecovery,
+      reasoning: isHighIntentReminder
+        ? `${customer.name} is a high-intent VIP customer with ${customer.previousPurchases} previous purchases. The agent recommends a zero-cost Payment Reminder before offering a discount.`
+        : `${customer.name} has completed ${customer.previousPurchases} previous purchases and abandoned a ₹${txn.cartValue.toLocaleString(
+            "en-IN"
+          )} cart. Historical behavior indicates strong conversion potential with a modest ₹${discount} incentive.`,
+      explanation,
+      recommendationFactors,
+      riskLevel: txn.cartValue > 7000 ? "high" : txn.cartValue > 4000 ? "medium" : "low",
+    };
+  }
+
+  if (txn.status === "payment_failed") {
+    const confidence = 0.8;
+    const explanation = buildExplanation(customer, txn, "payment_retry_suggestion", 0, confidence);
+    const recommendationFactors = buildRecommendationFactors(customer, txn);
+    const { priorityScore, priorityLevel } = calculatePriorityScore(
+      txn.cartValue,
+      customer.lifetimeValue,
+      customer.previousPurchases,
+      confidence,
+      customer.customerSegment,
+      customer.lastActiveDays ?? 7
+    );
+
+    return {
+      id: `opp_${txn.id}`,
+      customerId: customer.id,
+      customerName: customer.name,
+      customerSegment: customer.customerSegment,
+      productCategory: txn.productCategory,
+      productName: txn.productName,
+      transactionId: txn.id,
+      problem: "payment_failure",
+      cartValue: txn.cartValue,
+      recommendedAction: "payment_retry_suggestion",
+      recommendedDiscount: 0,
+      confidence,
+      priorityScore,
+      priorityLevel,
+      expectedRecovery: txn.cartValue,
+      reasoning: `Payment for ${customer.name}'s ₹${txn.cartValue.toLocaleString(
+        "en-IN"
+      )} order failed${
+        txn.paymentFailureReason ? ` (${txn.paymentFailureReason.replace(/_/g, " ")})` : ""
+      }. The agent does not auto-retry failed payments — the merchant should ask the customer to retry with a different payment method.`,
+      explanation,
+      recommendationFactors,
+      riskLevel: "medium",
+    };
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
 // Deterministic fallback engine (Phase 3). Runs with zero external
 // dependencies so the app is fully functional without any AI credentials.
 // ---------------------------------------------------------------------------
@@ -119,85 +260,8 @@ export function runDeterministicAnalysis(
     const customer = customerById.get(txn.customerId);
     if (!customer) continue;
 
-    if (
-      txn.status === "abandoned" &&
-      txn.cartValue > MIN_ABANDONED_CART_VALUE &&
-      customer.previousPurchases >= MIN_PREVIOUS_PURCHASES
-    ) {
-      // Priority 10: Lowest-cost action first.
-      // If customer has >=6 prior purchases, prefer zero-cost Payment Reminder.
-      const isHighIntentReminder = customer.previousPurchases >= 6;
-      const recommendedAction: RecommendedAction = isHighIntentReminder
-        ? "payment_reminder"
-        : "discount";
-      const rawDiscount = recommendedAction === "discount"
-        ? Math.min(200, txn.cartValue * MAX_DISCOUNT_PERCENT)
-        : 0;
-      const discount = clampDiscount(txn.cartValue, rawDiscount);
-      const expectedRecovery = txn.cartValue - discount;
-
-      const historyDepth = Math.min(customer.previousPurchases, 8) / 8;
-      const confidence = Number((0.75 + historyDepth * 0.15).toFixed(2));
-
-      const explanation = buildExplanation(
-        customer,
-        txn,
-        recommendedAction,
-        discount,
-        confidence
-      );
-
-      opportunities.push({
-        id: `opp_${txn.id}`,
-        customerId: customer.id,
-        customerName: customer.name,
-        transactionId: txn.id,
-        problem: "abandoned_cart",
-        cartValue: txn.cartValue,
-        recommendedAction,
-        recommendedDiscount: discount,
-        confidence,
-        expectedRecovery,
-        reasoning: isHighIntentReminder
-          ? `${customer.name} is a high-intent VIP customer with ${customer.previousPurchases} previous purchases. The agent recommends a zero-cost Payment Reminder before offering a discount.`
-          : `${customer.name} has completed ${customer.previousPurchases} previous purchases and abandoned a ₹${txn.cartValue.toLocaleString(
-              "en-IN"
-            )} cart. Historical behavior indicates strong conversion potential with a modest ₹${discount} incentive.`,
-        explanation,
-        riskLevel: txn.cartValue > 7000 ? "high" : txn.cartValue > 4000 ? "medium" : "low",
-      });
-    }
-
-    if (txn.status === "payment_failed") {
-      const confidence = 0.8;
-      const explanation = buildExplanation(
-        customer,
-        txn,
-        "payment_retry_suggestion",
-        0,
-        confidence
-      );
-
-      opportunities.push({
-        id: `opp_${txn.id}`,
-        customerId: customer.id,
-        customerName: customer.name,
-        transactionId: txn.id,
-        problem: "payment_failure",
-        cartValue: txn.cartValue,
-        recommendedAction: "payment_retry_suggestion",
-        recommendedDiscount: 0,
-        confidence,
-        expectedRecovery: txn.cartValue,
-        reasoning: `Payment for ${customer.name}'s ₹${txn.cartValue.toLocaleString(
-          "en-IN"
-        )} order failed${
-          txn.paymentFailureReason ? ` (${txn.paymentFailureReason.replace(/_/g, " ")})` : ""
-        }. The agent does not auto-retry failed payments — the merchant should ask the customer to retry with a different payment method.`,
-        explanation,
-        riskLevel: "medium",
-      });
-    }
+    const opportunity = deriveOpportunity(customer, txn);
+    if (opportunity) opportunities.push(opportunity);
   }
 
   opportunities.sort((a, b) => b.expectedRecovery - a.expectedRecovery);
@@ -275,6 +339,15 @@ function validateAndSanitize(
       discount,
       confidence
     );
+    const recommendationFactors = buildRecommendationFactors(customer, txn);
+    const { priorityScore, priorityLevel } = calculatePriorityScore(
+      txn.cartValue,
+      customer.lifetimeValue,
+      customer.previousPurchases,
+      confidence,
+      customer.customerSegment,
+      customer.lastActiveDays ?? 7
+    );
 
     sanitized.push({
       id: `opp_${txn.id}`,
@@ -282,16 +355,22 @@ function validateAndSanitize(
       // never taken from the model, even if it echoed them correctly.
       customerId: customer.id,
       customerName: customer.name,
+      customerSegment: customer.customerSegment,
+      productCategory: txn.productCategory,
+      productName: txn.productName,
       transactionId: txn.id,
       problem,
       cartValue: txn.cartValue,
       recommendedAction,
       recommendedDiscount: discount,
       confidence,
+      priorityScore,
+      priorityLevel,
       // Always recomputed, never trusted from the model.
       expectedRecovery: txn.cartValue - discount,
       reasoning,
       explanation,
+      recommendationFactors,
       riskLevel,
     });
 
@@ -426,6 +505,16 @@ export async function runAnalysis(
   return runDeterministicAnalysis(customers, transactions);
 }
 
+/**
+ * Server-side trusted lookup used at payment time. This calls the exact
+ * same `deriveOpportunity` used by the analysis engine — not a parallel
+ * reimplementation — so it is structurally impossible for the amount a
+ * merchant approved on the dashboard to differ from the amount the server
+ * charges. If a transaction wouldn't have been surfaced as an opportunity
+ * by the analysis engine (wrong status, below threshold, insufficient
+ * history), this returns null and the payment route refuses to proceed,
+ * even if a client crafts a plausible-looking opportunityId directly.
+ */
 export function getTrustedOpportunityById(opportunityId: string): Opportunity | null {
   const transactionId = opportunityId.replace(/^opp_/, "");
   const txn = (rawTransactions as Transaction[]).find((t) => t.id === transactionId);
@@ -434,30 +523,5 @@ export function getTrustedOpportunityById(opportunityId: string): Opportunity | 
   const customer = (rawCustomers as Customer[]).find((c) => c.id === txn.customerId);
   if (!customer) return null;
 
-  if (txn.status !== "abandoned" && txn.status !== "payment_failed") {
-    return null;
-  }
-
-  const problem = txn.status === "payment_failed" ? "payment_failure" : "abandoned_cart";
-  const recommendedAction = problem === "payment_failure" ? "payment_retry_suggestion" : "discount";
-  const discount =
-    recommendedAction === "discount"
-      ? clampDiscount(txn.cartValue, Math.floor(txn.cartValue * MAX_DISCOUNT_PERCENT))
-      : 0;
-  const expectedRecovery = txn.cartValue - discount;
-
-  return {
-    id: `opp_${txn.id}`,
-    customerId: customer.id,
-    customerName: customer.name,
-    transactionId: txn.id,
-    problem,
-    cartValue: txn.cartValue,
-    recommendedAction,
-    recommendedDiscount: discount,
-    confidence: problem === "payment_failure" ? 0.8 : 0.85,
-    expectedRecovery,
-    reasoning: `Server-verified opportunity for ${customer.name}.`,
-    riskLevel: txn.cartValue > 7000 ? "high" : txn.cartValue > 4000 ? "medium" : "low",
-  };
+  return deriveOpportunity(customer, txn);
 }

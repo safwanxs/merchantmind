@@ -40,10 +40,76 @@ export default function AgentAnalysis({
         return;
       }
 
-      setResult(body.data);
+      let data = body.data;
+
+      // Handle custom demo scenario injections for judging presentation
+      if (demoScenario === "excessive_discount") {
+        // Inject an opportunity proposing ₹750 discount on a ₹10,000 cart (exceeds ₹500 & 5% cap)
+        const excessiveOpp: Opportunity = {
+          id: "opp_demo_excessive",
+          customerId: "c007",
+          customerName: "Manish Agarwal (Excessive Discount Demo)",
+          customerSegment: "vip",
+          productCategory: "Home & Living",
+          productName: "Robot Vacuum Cleaner XL",
+          transactionId: "t002_demo",
+          problem: "abandoned_cart",
+          cartValue: 10000,
+          recommendedAction: "discount",
+          recommendedDiscount: 750, // Violates max ₹500 & 5% cap (7.5%)
+          confidence: 0.88,
+          priorityScore: 92,
+          priorityLevel: "critical",
+          expectedRecovery: 9250,
+          reasoning: "AI recommended a ₹750 discount (7.5% of cart) to maximize conversion, exceeding standard merchant cap.",
+          recommendationFactors: [
+            "Customer lifetime value is ₹41,200 (VIP).",
+            "High intent abandoned cart value ₹10,000.",
+            "AI proposed ₹750 incentive (7.5% cart value).",
+          ],
+          riskLevel: "high",
+        };
+        data = {
+          ...data,
+          summary: "Demo Scenario 2 Active: Excessive Discount recommendation generated to test policy guardrail enforcement.",
+          opportunities: [excessiveOpp, ...data.opportunities],
+        };
+      } else if (demoScenario === "low_value_transaction") {
+        const lowValueOpp: Opportunity = {
+          id: "opp_demo_low_value",
+          customerId: "c002",
+          customerName: "Priya Nair (Low Value Cart)",
+          customerSegment: "new",
+          productCategory: "Accessories",
+          productName: "Tech Organizer Pouch",
+          transactionId: "t003_demo",
+          problem: "abandoned_cart",
+          cartValue: 999, // Below MIN_ABANDONED_CART_VALUE (3000)
+          recommendedAction: "discount",
+          recommendedDiscount: 0,
+          confidence: 0.45,
+          priorityScore: 35,
+          priorityLevel: "low",
+          expectedRecovery: 999,
+          reasoning: "Cart value (₹999) is below the minimum threshold (₹3,000) for automated discount recovery. Marked as not eligible.",
+          recommendationFactors: [
+            "Cart value is ₹999 (Below ₹3,000 minimum threshold).",
+            "Customer purchase history is low (1 purchase).",
+            "Not eligible for automated incentive recovery.",
+          ],
+          riskLevel: "low",
+        };
+        data = {
+          ...data,
+          summary: "Demo Scenario 3 Active: Low value transaction evaluated.",
+          opportunities: [lowValueOpp, ...data.opportunities],
+        };
+      }
+
+      setResult(data);
       setForcedFallback(forceFallback);
       setStatus("idle");
-      onAnalysisComplete?.(body.data, forceFallback);
+      onAnalysisComplete?.(data, forceFallback);
     } catch {
       setError("Could not reach the analysis service. Please try again.");
       setStatus("error");
@@ -54,20 +120,22 @@ export default function AgentAnalysis({
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-ink">Revenue Intelligence</h2>
-          <p className="text-sm text-muted">AI-powered analysis of your commerce activity.</p>
+          <h2 className="text-lg font-semibold text-ink">Revenue Intelligence Engine</h2>
+          <p className="text-sm text-muted">AI-powered scan of abandoned carts and failed payments.</p>
         </div>
         <button
           type="button"
           onClick={runAnalysis}
           disabled={status === "loading"}
-          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-brand-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {status === "loading" ? "Analyzing…" : "Run AI Analysis"}
+          {status === "loading" ? "MerchantMind Analyzing…" : "Run Intelligence Analysis"}
         </button>
       </div>
 
-      {status === "loading" && <LoadingState label="Analyzing commerce data…" />}
+      {status === "loading" && (
+        <LoadingState label="MerchantMind is analyzing transaction patterns and identifying recovery opportunities..." />
+      )}
 
       {status === "error" && error && (
         <div className="card border-[var(--danger)] p-4 text-sm text-[var(--danger)]">
@@ -76,17 +144,18 @@ export default function AgentAnalysis({
       )}
 
       {forcedFallback && result && status !== "loading" && (
-        <div className="card border-[var(--pending)] p-4 text-sm text-[var(--pending)]">
-          AI provider unavailable. Running deterministic recovery analysis.
+        <div className="card border-[var(--pending)] bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300 font-semibold flex items-center gap-2">
+          <span>⚠️</span>
+          <span>AI UNAVAILABLE — RULE-BASED FALLBACK ACTIVATED</span>
         </div>
       )}
 
       {result && status !== "loading" && (
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="text-sm text-muted">{result.summary}</p>
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-canvas p-3 rounded-lg border border-border">
+            <p className="text-xs font-medium text-ink">{result.summary}</p>
             <StatusBadge
-              label={result.source === "fallback" ? "Demo analysis mode" : "AI analysis"}
+              label={result.source === "fallback" ? "Rule-Based Recovery Score" : "AI Analysis Badge"}
               tone={result.source === "fallback" ? "pending" : "success"}
             />
           </div>
@@ -95,9 +164,12 @@ export default function AgentAnalysis({
       )}
 
       {!result && status === "idle" && (
-        <div className="card p-8 text-center">
-          <p className="text-sm text-muted">
-            Run AI analysis to surface revenue recovery opportunities from your commerce data.
+        <div className="card p-8 text-center space-y-3">
+          <p className="text-sm font-semibold text-ink">
+            READY TO SCAN MERCHANT DATASET
+          </p>
+          <p className="text-xs text-muted max-w-md mx-auto">
+            Click &ldquo;Run Intelligence Analysis&rdquo; to evaluate 1,000 transactions across 300 customers for high-priority recovery targets.
           </p>
         </div>
       )}

@@ -4,29 +4,34 @@ import { useEffect, useRef, useState } from "react";
 import type {
   AnalysisResponse,
   AuditEvent,
+  Customer,
   GuardrailResult,
   Opportunity,
   OpportunityWorkflowStatus,
+  Transaction,
 } from "@/lib/types";
 import { validateOpportunity } from "@/lib/guardrails";
 import { appendAuditEvent, clearAuditLog, getAuditLog } from "@/lib/audit";
 import { formatINR } from "@/lib/calculations";
 import type { PaymentVerificationResult } from "@/app/api/payment-status/route";
 
+import DemoModeBadge from "./DemoModeBadge";
+import StatsCards from "./StatsCards";
+import DatasetOverview from "./DatasetOverview";
+import CustomerSegmentAnalytics from "./CustomerSegmentAnalytics";
+import AnalyticsVisualizations from "./AnalyticsVisualizations";
+import AgentDecisionFlow from "./AgentDecisionFlow";
 import AgentAnalysis from "./AgentAnalysis";
 import GuardrailPanel from "./GuardrailPanel";
 import ApprovalPanel from "./ApprovalPanel";
 import PaymentModal from "./PaymentModal";
 import DemoScenarios, { type DemoScenario } from "./DemoScenarios";
 import AuditTrail from "./AuditTrail";
-import StatsCards from "./StatsCards";
 import RevenueImpactPanel from "./RevenueImpactPanel";
 import AgentActivity from "./AgentActivity";
-import EvaluationPanel from "./EvaluationPanel";
+
+import rawCustomers from "@/data/customers.json";
 import rawTransactions from "@/data/transactions.json";
-import type { Transaction } from "@/lib/types";
-
-
 
 interface OppState {
   status: OpportunityWorkflowStatus;
@@ -36,7 +41,7 @@ interface OppState {
 }
 
 export default function DashboardClient() {
-  const [demoScenario, setDemoScenario] = useState<DemoScenario>("success");
+  const [demoScenario, setDemoScenario] = useState<DemoScenario>("high_value_recovery");
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [reviewingId, setReviewingId] = useState<string | null>(null);
   const [oppStates, setOppStates] = useState<Record<string, OppState>>({});
@@ -62,14 +67,14 @@ export default function DashboardClient() {
       actor: "SYSTEM",
       actionType: "ANALYSIS_STARTED",
       status: "info",
-      description: "Revenue intelligence analysis started.",
+      description: "Revenue intelligence analysis started on 1,000 transactions across 300 customers.",
     });
     logEvent({
       actor: "AI_AGENT",
       actionType: "ANALYSIS_COMPLETED",
       status: forcedFallback ? "pending" : "success",
       description: forcedFallback
-        ? "AI provider unavailable. Ran deterministic recovery analysis."
+        ? "AI UNAVAILABLE — RULE-BASED FALLBACK ACTIVATED"
         : result.summary,
       metadata: { source: result.source, opportunityCount: result.opportunities.length },
     });
@@ -81,8 +86,8 @@ export default function DashboardClient() {
         description: `${opp.customerName} — ${formatINR(opp.cartValue)} ${opp.problem.replace(
           /_/g,
           " "
-        )}.`,
-        metadata: { opportunityId: opp.id },
+        )}. Priority: ${opp.priorityScore}/100.`,
+        metadata: { opportunityId: opp.id, priorityScore: opp.priorityScore },
       });
     });
   }
@@ -107,8 +112,8 @@ export default function DashboardClient() {
           actionType: "GUARDRAIL_CHECKED",
           status: result.allowed ? "success" : "failed",
           description: result.allowed
-            ? `All guardrails passed for ${opportunity.customerName}.`
-            : `Guardrails blocked the recommended action for ${opportunity.customerName}.`,
+            ? `All financial guardrails passed for ${opportunity.customerName}.`
+            : `BLOCKED BY POLICY: Guardrails blocked recommended action for ${opportunity.customerName}.`,
           metadata: { opportunityId: opportunity.id, checks: result.checks },
         });
       }
@@ -142,7 +147,7 @@ export default function DashboardClient() {
       actor: "MERCHANT",
       actionType: "ACTION_REJECTED",
       status: "rejected",
-      description: `Rejected recommended action for ${opportunity.customerName}.`,
+      description: `NO ACTION EXECUTED: Merchant rejected recommendation for ${opportunity.customerName}.`,
       metadata: { opportunityId: opportunity.id },
     });
   }
@@ -181,7 +186,7 @@ export default function DashboardClient() {
       actionType: "PAYMENT_FAILED",
       status: "failed",
       description: isSimulated
-        ? `Simulated payment failure for ${opportunity.customerName} (Demo Scenario).`
+        ? `Simulated payment failure for ${opportunity.customerName} (Payment Processing → Failed).`
         : `Payment failed or Checkout was dismissed for ${opportunity.customerName}.`,
       metadata: { opportunityId: opportunity.id, simulated: isSimulated },
     });
@@ -193,17 +198,14 @@ export default function DashboardClient() {
       metadata: { opportunityId: opportunity.id },
     });
 
-    // Reverse the provisional budget hold — a fresh approval will re-add it.
     setApprovedIncentiveTotal((prev) => Math.max(0, prev - opportunity.recommendedDiscount));
 
-    // Require a fresh merchant approval before any retry — send the
-    // opportunity back to the Approval Panel, not straight back to payment.
     setOppStates((prev) => ({
       ...prev,
       [opportunity.id]: {
         ...prev[opportunity.id],
         status: "pending_approval",
-        failureMessage: "Payment could not be completed. The agent has stopped this workflow.",
+        failureMessage: "Payment Processing → Failed. Workflow stopped.",
         failureIsSimulated: isSimulated,
       },
     }));
@@ -221,73 +223,107 @@ export default function DashboardClient() {
 
   return (
     <div className="space-y-8">
+      {/* Top Banner with Demo Mode Indicator */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-ink">MerchantMind Intelligence Dashboard</h1>
+          <p className="text-xs text-muted mt-1">
+            AI-powered revenue recovery platform with human-in-the-loop merchant controls and Razorpay Test Mode execution.
+          </p>
+        </div>
+        <div>
+          <DemoModeBadge />
+        </div>
+      </div>
+
+      {/* Phase 3: Enhanced Dashboard Metrics */}
       <StatsCards
+        customers={rawCustomers as Customer[]}
         transactions={rawTransactions as Transaction[]}
         opportunities={opportunities}
         verifiedRecovered={verifiedRecovered}
       />
 
-      <RevenueImpactPanel
+      {/* Phase 12: Dataset Statistics Panel */}
+      <DatasetOverview
+        customers={rawCustomers as Customer[]}
         transactions={rawTransactions as Transaction[]}
         opportunities={opportunities}
-        verifiedRecovered={verifiedRecovered}
       />
 
-      <AgentActivity
-        hasAnalyzed={opportunities.length > 0}
-        status={reviewingState?.status}
-      />
+      {/* Phase 11: Agent Decision Flow Architecture */}
+      <AgentDecisionFlow />
 
+      {/* Phase 9: Demo Scenario Simulator */}
       <DemoScenarios value={demoScenario} onChange={setDemoScenario} />
 
+      {/* Revenue Intelligence Analysis & Opportunity List */}
       <AgentAnalysis
         demoScenario={demoScenario}
         onAnalysisComplete={handleAnalysisComplete}
         onReview={handleReview}
       />
 
-      <EvaluationPanel />
+      {/* Phase 4: Customer Segment Analytics */}
+      <CustomerSegmentAnalytics
+        customers={rawCustomers as Customer[]}
+        transactions={rawTransactions as Transaction[]}
+        opportunities={opportunities}
+      />
 
+      {/* Phase 10: Analytics Visualizations */}
+      <AnalyticsVisualizations
+        customers={rawCustomers as Customer[]}
+        transactions={rawTransactions as Transaction[]}
+        opportunities={opportunities}
+      />
+
+      {/* Financial Guardrails & Merchant Approval Modal / Panel */}
       {reviewingOpportunity && reviewingState && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-ink">
-              Reviewing: {reviewingOpportunity.customerName}
-            </h3>
+        <section className="space-y-4 rounded-xl border border-brand/40 bg-surface p-6 shadow-sm">
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <div>
+              <h3 className="text-base font-bold text-ink">
+                Reviewing Recovery Target: {reviewingOpportunity.customerName}
+              </h3>
+              <p className="text-xs text-muted">
+                Transaction #{reviewingOpportunity.transactionId} • {formatINR(reviewingOpportunity.cartValue)} Cart
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => setReviewingId(null)}
-              className="text-xs font-medium text-muted hover:text-ink"
+              className="rounded-md border border-border px-3 py-1 text-xs font-semibold text-muted hover:bg-canvas hover:text-ink"
             >
-              Close
+              Close Review Panel ✕
             </button>
           </div>
 
           <GuardrailPanel result={reviewingState.guardrailResult} />
 
           {reviewingState.failureMessage && (
-            <div className="card border-[var(--danger)] p-4 text-sm">
-              <p className="font-medium text-[var(--danger)]">{reviewingState.failureMessage}</p>
-              <p className="mt-1 text-muted">
-                Suggested next step: Request customer to choose another payment method.
+            <div className="card border-[var(--danger)] bg-red-500/5 p-4 text-sm">
+              <p className="font-semibold text-[var(--danger)]">{reviewingState.failureMessage}</p>
+              <p className="mt-1 text-xs text-muted">
+                Suggested next step: Request customer to retry with an alternate payment method.
               </p>
               <span
-                className={`mt-2 inline-block rounded-md px-2 py-1 text-xs font-medium ${
+                className={`mt-2 inline-block rounded px-2 py-0.5 text-xs font-semibold ${
                   reviewingState.failureIsSimulated
-                    ? "bg-[var(--pending-bg)] text-[var(--pending)]"
-                    : "bg-[var(--danger-bg)] text-[var(--danger)]"
+                    ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
+                    : "bg-red-500/20 text-red-700 dark:text-red-300"
                 }`}
               >
                 {reviewingState.failureIsSimulated
-                  ? "Simulated demo failure"
-                  : "Real payment failure"}
+                  ? "Simulated Demo Scenario Failure"
+                  : "Razorpay Payment Failure"}
               </span>
             </div>
           )}
 
           {reviewingState.status === "blocked" && (
-            <div className="card border-[var(--danger)] p-4 text-sm text-[var(--danger)]">
-              This action is blocked by one or more guardrails and cannot proceed to approval.
+            <div className="card border-red-500 bg-red-500/10 p-4 text-sm font-bold text-red-600 dark:text-red-400">
+              🛑 BLOCKED BY POLICY: This action violates financial limits and cannot proceed to merchant approval.
             </div>
           )}
 
@@ -302,17 +338,20 @@ export default function DashboardClient() {
           )}
 
           {reviewingState.status === "rejected" && (
-            <div className="card p-4 text-sm text-muted">This action was rejected.</div>
+            <div className="card bg-canvas p-4 text-sm font-semibold text-muted">
+              🔒 NO ACTION EXECUTED: Merchant explicitly rejected this recovery recommendation.
+            </div>
           )}
 
           {reviewingState.status === "payment_success" && (
-            <div className="card border-[var(--success)] p-4 text-sm text-[var(--success)]">
-              Payment succeeded. This opportunity is fully resolved.
+            <div className="card border-emerald-500 bg-emerald-500/10 p-4 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              ✅ PAYMENT SUCCESSFUL: Revenue recovered and verified via Razorpay signature.
             </div>
           )}
         </section>
       )}
 
+      {/* Razorpay Test Mode Payment Modal */}
       {paymentOpportunity && (
         <PaymentModal
           opportunity={paymentOpportunity}
@@ -324,6 +363,19 @@ export default function DashboardClient() {
         />
       )}
 
+      {/* Verified Revenue & Stepper Activity */}
+      <RevenueImpactPanel
+        transactions={rawTransactions as Transaction[]}
+        opportunities={opportunities}
+        verifiedRecovered={verifiedRecovered}
+      />
+
+      <AgentActivity
+        hasAnalyzed={opportunities.length > 0}
+        status={reviewingState?.status}
+      />
+
+      {/* Session Audit Log */}
       <AuditTrail events={auditLog} onClear={handleClearAudit} />
     </div>
   );

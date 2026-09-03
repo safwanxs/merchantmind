@@ -1,7 +1,23 @@
 // Core domain types for MerchantMind.
 // Kept deliberately small — every type here is used by real UI/logic.
 
-export type CustomerSegment = "new" | "returning" | "vip";
+export type CustomerSegment =
+  | "vip"
+  | "high_value"
+  | "returning"
+  | "new"
+  | "at_risk"
+  | "inactive";
+
+export type ProductCategory =
+  | "Electronics"
+  | "Fashion"
+  | "Home & Living"
+  | "Accessories"
+  | "Beauty"
+  | "Sports"
+  | "Books"
+  | "Groceries";
 
 export interface Customer {
   id: string;
@@ -11,6 +27,9 @@ export interface Customer {
   lifetimeValue: number;
   lastPurchaseDate: string;
   customerSegment: CustomerSegment;
+  averageOrderValue?: number;
+  totalSpent?: number;
+  lastActiveDays?: number;
 }
 
 export type TransactionStatus =
@@ -23,6 +42,7 @@ export interface Transaction {
   id: string;
   customerId: string;
   productName: string;
+  productCategory?: ProductCategory;
   cartValue: number;
   status: TransactionStatus;
   createdAt: string;
@@ -32,6 +52,7 @@ export interface Transaction {
 export type OpportunityProblem = "abandoned_cart" | "payment_failure";
 export type RecommendedAction = "discount" | "payment_retry_suggestion" | "payment_reminder";
 export type RiskLevel = "low" | "medium" | "high";
+export type PriorityLevel = "critical" | "high" | "medium" | "low";
 
 export interface OpportunityExplanation {
   whyCustomer: string[];
@@ -44,15 +65,21 @@ export interface Opportunity {
   id: string;
   customerId: string;
   customerName: string;
+  customerSegment?: CustomerSegment;
+  productCategory?: ProductCategory;
+  productName?: string;
   transactionId: string;
   problem: OpportunityProblem;
   cartValue: number;
   recommendedAction: RecommendedAction;
   recommendedDiscount: number;
   confidence: number;
+  priorityScore: number;
+  priorityLevel: PriorityLevel;
   expectedRecovery: number;
   reasoning: string;
   explanation?: OpportunityExplanation;
+  recommendationFactors: string[];
   riskLevel: RiskLevel;
 }
 

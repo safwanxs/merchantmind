@@ -71,7 +71,7 @@ export default function PaymentModal({
   const [error, setError] = useState<string | null>(null);
 
   const finalAmount = opportunity.expectedRecovery;
-  const isSimulatedFailureDemo = demoScenario === "failed_payment";
+  const isSimulatedFailureDemo = demoScenario === "payment_failure";
 
   async function handleProceed() {
     setError(null);

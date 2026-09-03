@@ -1,25 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import type { Opportunity } from "@/lib/types";
+import type { Opportunity, PriorityLevel } from "@/lib/types";
 import { formatINR } from "@/lib/calculations";
-import StatusBadge from "@/components/shared/StatusBadge";
-
-const RISK_TONE: Record<Opportunity["riskLevel"], "success" | "pending" | "danger"> = {
-  low: "success",
-  medium: "pending",
-  high: "danger",
-};
 
 const PROBLEM_LABEL: Record<Opportunity["problem"], string> = {
-  abandoned_cart: "Abandoned cart",
-  payment_failure: "Payment failure",
+  abandoned_cart: "Abandoned Cart",
+  payment_failure: "Payment Failure",
 };
 
 const ACTION_LABEL: Record<Opportunity["recommendedAction"], string> = {
-  discount: "Offer discount",
-  payment_retry_suggestion: "Suggest retry",
-  payment_reminder: "Payment reminder (₹0)",
+  discount: "Offer Discount",
+  payment_retry_suggestion: "Suggest Payment Retry",
+  payment_reminder: "Send Zero-Cost Reminder",
+};
+
+const PRIORITY_BADGE: Record<PriorityLevel, { text: string; bg: string; border: string }> = {
+  critical: { text: "text-red-700 dark:text-red-300 font-bold", bg: "bg-red-500/10", border: "border-red-500/30" },
+  high: { text: "text-orange-700 dark:text-orange-300 font-bold", bg: "bg-orange-500/10", border: "border-orange-500/30" },
+  medium: { text: "text-amber-700 dark:text-amber-300 font-semibold", bg: "bg-amber-500/10", border: "border-amber-500/30" },
+  low: { text: "text-emerald-700 dark:text-emerald-300 font-medium", bg: "bg-emerald-500/10", border: "border-emerald-500/30" },
+};
+
+const PRIORITY_LABEL: Record<PriorityLevel, string> = {
+  critical: "Critical 🔥",
+  high: "High 🔴",
+  medium: "Medium 🟡",
+  low: "Low 🟢",
 };
 
 export default function RevenueOpportunity({
@@ -32,119 +39,128 @@ export default function RevenueOpportunity({
   const [expanded, setExpanded] = useState(false);
   const confidenceScore = Math.round(opportunity.confidence * 100);
 
+  const priorityLevel = opportunity.priorityLevel || "low";
+  const priorityBadgeStyle = PRIORITY_BADGE[priorityLevel];
+
+  const segmentLabel = opportunity.customerSegment
+    ? opportunity.customerSegment.replace(/_/g, " ").toUpperCase()
+    : "STANDARD";
+
   return (
-    <div className="card p-5">
-      <div className="flex items-start justify-between gap-4">
+    <div className="card p-5 space-y-4 hover:border-brand/40 transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-border pb-3">
         <div>
-          <p className="text-sm font-medium text-ink">{opportunity.customerName}</p>
-          <p className="text-sm text-muted">{PROBLEM_LABEL[opportunity.problem]}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4 className="text-base font-semibold text-ink">{opportunity.customerName}</h4>
+            <span className="rounded bg-canvas border border-border px-2 py-0.5 text-[10px] font-mono text-muted uppercase">
+              {segmentLabel}
+            </span>
+            {opportunity.productCategory && (
+              <span className="rounded bg-surface border border-border px-2 py-0.5 text-[10px] font-mono text-muted">
+                {opportunity.productCategory}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-muted mt-1">
+            Product: <span className="font-medium text-ink">{opportunity.productName || "E-Commerce Cart"}</span> • Transaction #{opportunity.transactionId}
+          </p>
         </div>
-        <StatusBadge label={opportunity.riskLevel} tone={RISK_TONE[opportunity.riskLevel]} />
+
+        <div className="flex items-center gap-2">
+          <div className={`rounded-lg border px-3 py-1.5 text-xs text-center ${priorityBadgeStyle.bg} ${priorityBadgeStyle.border}`}>
+            <p className="text-[10px] text-muted uppercase tracking-wider">Priority Score</p>
+            <p className={`font-mono text-sm ${priorityBadgeStyle.text}`}>
+              {opportunity.priorityScore}/100 ({PRIORITY_LABEL[priorityLevel]})
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-5 bg-canvas/50 p-3 rounded-lg border border-border/50">
         <div>
-          <p className="text-xs text-muted">Cart value</p>
-          <p className="font-medium text-ink">{formatINR(opportunity.cartValue)}</p>
+          <p className="text-[11px] text-muted uppercase">Revenue At Risk</p>
+          <p className="font-semibold text-ink text-base">{formatINR(opportunity.cartValue)}</p>
         </div>
         <div>
-          <p className="text-xs text-muted">AI Confidence</p>
-          <p className="font-medium text-ink">{confidenceScore}% AI Confidence Score</p>
+          <p className="text-[11px] text-muted uppercase">Problem Type</p>
+          <p className="font-medium text-ink">{PROBLEM_LABEL[opportunity.problem]}</p>
         </div>
         <div>
-          <p className="text-xs text-muted">Action</p>
-          <p className="font-medium text-ink">{ACTION_LABEL[opportunity.recommendedAction]}</p>
+          <p className="text-[11px] text-muted uppercase">Recovery Score</p>
+          <p className="font-medium text-ink">{confidenceScore}% Score</p>
         </div>
         <div>
-          <p className="text-xs text-muted">Expected recovery</p>
-          <p className="font-medium text-[var(--success)]">
+          <p className="text-[11px] text-muted uppercase">Recommended Action</p>
+          <p className="font-medium text-brand">{ACTION_LABEL[opportunity.recommendedAction]}</p>
+        </div>
+        <div>
+          <div className="flex items-center gap-1">
+            <p className="text-[11px] text-muted uppercase">Expected Recovery</p>
+            <span
+              className="cursor-help text-xs text-muted hover:text-ink"
+              title="Model-based estimate. Actual recovery may vary."
+            >
+              ⓘ
+            </span>
+          </div>
+          <p className="font-semibold text-[var(--success)] text-base">
             {formatINR(opportunity.expectedRecovery)}
           </p>
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3 pt-1">
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="text-sm font-medium text-brand hover:opacity-80"
+          className="text-xs font-semibold text-brand hover:underline flex items-center gap-1"
         >
-          {expanded ? "Hide details" : "Review Action & Explanation"}
+          {expanded ? "▲ Hide Recommendation Factors" : "▼ Show Recommendation Factors & Guardrails"}
         </button>
+
+        {onReview && (
+          <button
+            type="button"
+            onClick={() => onReview(opportunity)}
+            className="rounded-md bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-ink hover:opacity-90 transition-opacity"
+          >
+            Review Guardrail Check →
+          </button>
+        )}
       </div>
 
       {expanded && (
-        <div className="mt-4 space-y-4 border-t border-border pt-4">
+        <div className="mt-3 space-y-4 border-t border-border pt-4 text-xs">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted">AI Reasoning</p>
-            <p className="mt-1 text-sm text-ink">{opportunity.reasoning}</p>
+            <p className="font-bold text-muted uppercase tracking-wider text-[10px]">RECOMMENDATION FACTORS</p>
+            <ul className="mt-2 space-y-1.5">
+              {(opportunity.recommendationFactors && opportunity.recommendationFactors.length > 0
+                ? opportunity.recommendationFactors
+                : [
+                    `Customer completed ${opportunity.explanation?.whyCustomer[0] || "multiple purchases"}.`,
+                    `Cart value is ${formatINR(opportunity.cartValue)}.`,
+                    `Customer belongs to ${segmentLabel} segment.`,
+                  ]
+              ).map((factor, idx) => (
+                <li key={idx} className="flex items-start gap-2 text-ink">
+                  <span className="text-[var(--success)] font-bold">•</span>
+                  <span>{factor}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {opportunity.explanation && (
-            <div className="grid grid-cols-1 gap-4 rounded-md bg-canvas p-4 text-sm sm:grid-cols-2">
-              <div>
-                <p className="text-xs font-semibold text-muted">WHY THIS CUSTOMER?</p>
-                <ul className="mt-1.5 space-y-1 text-xs text-ink">
-                  {opportunity.explanation.whyCustomer.map((bullet, idx) => (
-                    <li key={idx} className="flex items-center gap-1.5">
-                      <span className="text-[var(--success)] font-bold">✓</span>
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <p className="text-xs font-semibold text-muted">WHY THIS ACTION?</p>
-                <p className="mt-1 text-xs text-ink">{opportunity.explanation.whyAction}</p>
-
-                <p className="mt-3 text-xs font-semibold text-muted">WHY THIS AMOUNT?</p>
-                <p className="mt-1 text-xs text-ink">{opportunity.explanation.whyAmount}</p>
-              </div>
-            </div>
-          )}
-
-          <div className="border-t border-border pt-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted">Financial Impact Analysis</p>
-            <dl className="mt-2 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-              <div>
-                <dt className="text-xs text-muted">Original Cart</dt>
-                <dd className="font-medium text-ink">{formatINR(opportunity.cartValue)}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-muted">Incentive Cost</dt>
-                <dd className="font-medium text-ink">{formatINR(opportunity.recommendedDiscount)}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-muted">Expected Recovery</dt>
-                <dd className="font-medium text-[var(--success)]">{formatINR(opportunity.expectedRecovery)}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-muted">Estimated Net Revenue</dt>
-                <dd className="font-medium text-ink">
-                  {formatINR(opportunity.explanation?.estimatedIncrementalRevenue ?? (opportunity.expectedRecovery - opportunity.recommendedDiscount))}
-                  <span className="block text-[10px] text-muted font-normal">(Model Estimate)</span>
-                </dd>
-              </div>
-            </dl>
+          <div>
+            <p className="font-bold text-muted uppercase tracking-wider text-[10px]">AGENT REASONING SUMMARY</p>
+            <p className="mt-1 text-ink bg-canvas p-3 rounded border border-border/60">{opportunity.reasoning}</p>
           </div>
 
-          <div className="rounded-md border border-border bg-surface p-3 text-xs text-muted">
-            <span className="font-semibold text-ink">Note on Confidence:</span> Decision confidence based on available customer and transaction signals; not a calibrated probability.
+          <div className="rounded border border-amber-500/20 bg-amber-500/5 p-2.5 text-[11px] text-muted flex items-center justify-between">
+            <span>💡 <strong>Expected Recovery Value</strong>: Model-based estimate. Actual recovery may vary.</span>
+            <span className="font-mono text-ink font-semibold">{formatINR(opportunity.expectedRecovery)}</span>
           </div>
-
-          {onReview && (
-            <button
-              type="button"
-              onClick={() => onReview(opportunity)}
-              className="mt-2 rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-ink hover:opacity-90"
-            >
-              Continue to guardrail check
-            </button>
-          )}
         </div>
       )}
     </div>
   );
 }
-
