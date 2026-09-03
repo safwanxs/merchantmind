@@ -54,6 +54,7 @@ function loadRazorpayScript(): Promise<boolean> {
 
 export default function PaymentModal({
   opportunity,
+  approvalToken,
   demoScenario,
   onClose,
   onOrderCreated,
@@ -61,6 +62,7 @@ export default function PaymentModal({
   onFailure,
 }: {
   opportunity: Opportunity;
+  approvalToken?: string;
   demoScenario: DemoScenario;
   onClose: () => void;
   onOrderCreated: (orderId: string) => void;
@@ -94,7 +96,7 @@ export default function PaymentModal({
       const orderRes = await fetch("/api/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ opportunityId: opportunity.id }),
+        body: JSON.stringify({ opportunityId: opportunity.id, approvalToken }),
       });
       const orderBody: { success: boolean; data?: CreateOrderResult; error?: string } =
         await orderRes.json();

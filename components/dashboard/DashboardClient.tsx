@@ -46,6 +46,7 @@ export default function DashboardClient() {
   const [oppStates, setOppStates] = useState<Record<string, OppState>>({});
   const [approvedIncentiveTotal, setApprovedIncentiveTotal] = useState(0);
   const [paymentModalOppId, setPaymentModalOppId] = useState<string | null>(null);
+  const [approvalTokens, setApprovalTokens] = useState<Record<string, string>>({});
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
   const [verifiedRecovered, setVerifiedRecovered] = useState(0);
 
@@ -104,6 +105,13 @@ export default function DashboardClient() {
 
     if (!oppStates[opportunity.id]) {
       const result = validateOpportunity(opportunity, approvedIncentiveTotal);
+      handleGuardrailReviewed(opportunity, result);
+    }
+  }
+
+  function handleGuardrailReviewed(opportunity: Opportunity, result: GuardrailResult) {
+    if (!guardrailLogged.current.has(opportunity.id)) {
+      guardrailLogged.current.add(opportunity.id);
       setOppStates((prev) => ({
         ...prev,
         [opportunity.id]: {
@@ -111,43 +119,82 @@ export default function DashboardClient() {
           guardrailResult: result,
         },
       }));
-
-      if (!guardrailLogged.current.has(opportunity.id)) {
-        guardrailLogged.current.add(opportunity.id);
-        logEvent({
-          actor: "SYSTEM",
-          actionType: "GUARDRAIL_CHECKED",
-          status: result.allowed ? "success" : "failed",
-          description: result.allowed
-            ? `All financial guardrails passed for ${opportunity.customerName}.`
-            : `BLOCKED BY POLICY: Guardrails blocked recommended action for ${opportunity.customerName}.`,
-          metadata: { opportunityId: opportunity.id, checks: result.checks },
-        });
-      }
+      logEvent({
+        actor: "SYSTEM",
+        actionType: "GUARDRAIL_CHECKED",
+        status: result.allowed ? "success" : "failed",
+        description: result.allowed
+          ? `All financial guardrails passed for ${opportunity.customerName}.`
+          : `BLOCKED BY POLICY: Guardrails blocked recommended action for ${opportunity.customerName}.`,
+        metadata: { opportunityId: opportunity.id, checks: result.checks },
+      });
     }
   }
 
-  function handleApprove(opportunity: Opportunity) {
-    setApprovedIncentiveTotal((prev) => prev + opportunity.recommendedDiscount);
-    fetch("/api/budget", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "approve", discount: opportunity.recommendedDiscount }),
-    }).catch(() => {});
-    setOppStates((prev) => ({
-      ...prev,
-      [opportunity.id]: { ...prev[opportunity.id], status: "processing_payment" },
-    }));
-    logEvent({
-      actor: "MERCHANT",
-      actionType: "ACTION_APPROVED",
-      status: "success",
-      description: `Approved ${formatINR(opportunity.recommendedDiscount)} incentive for ${
-        opportunity.customerName
-      }.`,
-      metadata: { opportunityId: opportunity.id },
-    });
-    setPaymentModalOppId(opportunity.id);
+  async function handleApprove(opportunity: Opportunity) {
+    try {
+      const res = await fetch("/api/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ opportunityId: opportunity.id }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success || !data.data?.approvalToken) {
+        const errorMsg = data.error || "Approval failed on the server.";
+        setOppStates((prev) => ({
+          ...prev,
+          [opportunity.id]: {
+            ...prev[opportunity.id],
+            status: "blocked",
+            failureMessage: errorMsg,
+          },
+        }));
+        logEvent({
+          actor: "SYSTEM",
+          actionType: "APPROVAL_REFUSED",
+          status: "failed",
+          description: `Approval refused for ${opportunity.customerName}: ${errorMsg}`,
+          metadata: { opportunityId: opportunity.id, error: errorMsg },
+        });
+        return;
+      }
+
+      const token = data.data.approvalToken as string;
+      setApprovalTokens((prev) => ({ ...prev, [opportunity.id]: token }));
+
+      setApprovedIncentiveTotal((prev) => prev + opportunity.recommendedDiscount);
+      fetch("/api/budget", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve", discount: opportunity.recommendedDiscount }),
+      }).catch(() => {});
+
+      setOppStates((prev) => ({
+        ...prev,
+        [opportunity.id]: { ...prev[opportunity.id], status: "processing_payment" },
+      }));
+
+      logEvent({
+        actor: "MERCHANT",
+        actionType: "ACTION_APPROVED",
+        status: "success",
+        description: `Approved ${formatINR(opportunity.recommendedDiscount)} incentive for ${
+          opportunity.customerName
+        }. Approval token issued.`,
+        metadata: { opportunityId: opportunity.id, approvalToken: token },
+      });
+      setPaymentModalOppId(opportunity.id);
+    } catch {
+      setOppStates((prev) => ({
+        ...prev,
+        [opportunity.id]: {
+          ...prev[opportunity.id],
+          status: "blocked",
+          failureMessage: "Network error requesting merchant approval token.",
+        },
+      }));
+    }
   }
 
   function handleReject(opportunity: Opportunity) {
@@ -211,6 +258,11 @@ export default function DashboardClient() {
     });
 
     setApprovedIncentiveTotal((prev) => Math.max(0, prev - opportunity.recommendedDiscount));
+    setApprovalTokens((prev) => {
+      const copy = { ...prev };
+      delete copy[opportunity.id];
+      return copy;
+    });
     fetch("/api/budget", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

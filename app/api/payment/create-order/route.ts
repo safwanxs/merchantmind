@@ -3,10 +3,12 @@ import { getRazorpayClient } from "@/lib/razorpay";
 import { getTrustedOpportunityById } from "@/lib/ai";
 import { validateOpportunity } from "@/lib/guardrails";
 import { getApprovedIncentiveTotal, isOpportunityCompleted } from "@/lib/budget";
+import { verifyApprovalToken } from "@/lib/approvalToken";
 import type { ApiResponse } from "@/lib/types";
 
 interface CreateOrderRequestBody {
   opportunityId?: unknown;
+  approvalToken?: unknown;
 }
 
 export interface CreateOrderResult {
@@ -27,6 +29,7 @@ export async function POST(request: Request) {
   }
 
   const opportunityId = typeof body.opportunityId === "string" ? body.opportunityId : "";
+  const approvalToken = typeof body.approvalToken === "string" ? body.approvalToken : "";
 
   if (!opportunityId) {
     const failure: ApiResponse<never> = {
@@ -34,6 +37,15 @@ export async function POST(request: Request) {
       error: "opportunityId is required.",
     };
     return NextResponse.json(failure, { status: 400 });
+  }
+
+  // Approval Verification Guard: Must verify valid merchant approval token before proceeding
+  if (!verifyApprovalToken(approvalToken, opportunityId)) {
+    const failure: ApiResponse<never> = {
+      success: false,
+      error: "Merchant approval token missing or invalid.",
+    };
+    return NextResponse.json(failure, { status: 403 });
   }
 
   // Duplicate Execution Guard: Refuse if payment is already recorded for this opportunity
