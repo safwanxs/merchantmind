@@ -2,6 +2,8 @@
 
 > AI recommends. Guardrails constrain. The merchant decides.
 
+🔗 **[Live Demo](https://merchantmind-gnjj.vercel.app/)**
+
 MerchantMind is an explainable revenue-recovery dashboard built for the **Razorpay AI Buildathon, Track 01: AI Growth & Agentic Commerce**. It finds high-intent abandoned carts and failed payments, explains each recommendation, validates the recommendation against financial policy, and requires merchant approval before any payment action.
 
 ## What I Built
@@ -63,6 +65,18 @@ Client-provided amounts are never trusted, and the Razorpay secret never reaches
 - Records analysis, opportunity identification, guardrail checks, approvals, rejections, order creation, payment results, and stopped workflows.
 - Tags events with `AI_AGENT`, `SYSTEM`, `MERCHANT`, or `RAZORPAY` actors.
 - Includes a clear simulated AI-unavailable path and failed-payment scenario for demonstrating graceful degradation.
+
+## Recent Updates
+
+**September 2026** — Dependency Updates & Next.js 16 Upgrade
+- ✅ Updated to **Next.js 16.3.4** (from 15.5.25) with Turbopack compilation
+- ✅ Updated **TypeScript 5.7.2** with enhanced type safety
+- ✅ Updated **Tailwind CSS 3.4.17** for latest styling features
+- ✅ Updated **ESLint 9.17.0** with improved linting rules
+- ✅ Verified **production build** passes all type checks and compiles cleanly
+- ✅ Confirmed **payment API security** unchanged: HMAC verification and server-side amount validation intact
+- ✅ All environment variables (`GEMINI_API_KEY`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`) properly referenced
+- ✅ **Zero breaking changes** — all existing functionality preserved
 
 ## Architecture
 
