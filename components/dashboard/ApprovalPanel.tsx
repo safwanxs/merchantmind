@@ -31,7 +31,7 @@ export default function ApprovalPanel({
           type="button"
           disabled={disabled}
           onClick={() => setShowConfirm(true)}
-          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-ink hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-10 rounded-md bg-brand px-4 text-sm font-medium text-brand-ink hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Approve Action
         </button>
@@ -39,7 +39,7 @@ export default function ApprovalPanel({
           type="button"
           disabled={disabled}
           onClick={onReject}
-          className="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-10 rounded-md border border-border px-4 text-sm font-medium text-ink hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-50"
         >
           Reject Action
         </button>
@@ -61,7 +61,7 @@ export default function ApprovalPanel({
               <button
                 type="button"
                 onClick={() => setShowConfirm(false)}
-                className="rounded-md border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-canvas"
+                className="h-10 rounded-md border border-border px-4 text-sm font-medium text-ink hover:bg-canvas"
               >
                 Cancel
               </button>
@@ -71,7 +71,7 @@ export default function ApprovalPanel({
                   setShowConfirm(false);
                   onApprove();
                 }}
-                className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-ink hover:opacity-90"
+                className="h-10 rounded-md bg-brand px-4 text-sm font-medium text-brand-ink hover:opacity-90"
               >
                 Approve &amp; Continue
               </button>

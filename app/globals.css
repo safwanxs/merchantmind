@@ -40,6 +40,13 @@ body {
   border-radius: 10px;
 }
 
+button,
+select,
+input {
+  border-radius: 6px;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;

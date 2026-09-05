@@ -127,7 +127,7 @@ export default function AgentAnalysis({
           type="button"
           onClick={runAnalysis}
           disabled={status === "loading"}
-          className="rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-brand-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-10 rounded-md bg-brand px-4 text-sm font-semibold text-brand-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {status === "loading" ? "MerchantMind Analyzing…" : "Run Intelligence Analysis"}
         </button>
@@ -144,7 +144,7 @@ export default function AgentAnalysis({
       )}
 
       {forcedFallback && result && status !== "loading" && (
-        <div className="card border-[var(--pending)] bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300 font-semibold flex items-center gap-2">
+        <div className="card border-[var(--pending)] bg-[var(--pending-bg)] p-4 text-sm font-semibold text-[var(--pending)] flex items-center gap-2">
           <span>⚠️</span>
           <span>AI UNAVAILABLE — RULE-BASED FALLBACK ACTIVATED</span>
         </div>

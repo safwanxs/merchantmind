@@ -291,7 +291,7 @@ export default function DashboardClient() {
   const paymentOpportunity = opportunities.find((o) => o.id === paymentModalOppId) ?? null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Top Banner with Demo Mode Indicator */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
@@ -349,7 +349,7 @@ export default function DashboardClient() {
 
       {/* Financial Guardrails & Merchant Approval Modal / Panel */}
       {reviewingOpportunity && reviewingState && (
-        <section className="space-y-4 rounded-xl border border-brand/40 bg-surface p-6 shadow-sm">
+        <section className="space-y-4 rounded-xl border border-brand/40 bg-surface p-4 shadow-sm sm:p-6">
           <div className="flex items-center justify-between border-b border-border pb-3">
             <div>
               <h3 className="text-base font-bold text-ink">
