@@ -61,7 +61,7 @@ Client-provided amounts are never trusted, and the Razorpay secret never reaches
 
 ### Audit and failure transparency
 
-- Added an append-only audit ledger persisted in browser local storage for the demo.
+- Added an append-only server audit ledger backed by the configured store.
 - Records analysis, opportunity identification, guardrail checks, approvals, rejections, order creation, payment results, and stopped workflows.
 - Tags events with `AI_AGENT`, `SYSTEM`, `MERCHANT`, or `RAZORPAY` actors.
 - Includes a clear simulated AI-unavailable path and failed-payment scenario for demonstrating graceful degradation.
@@ -116,7 +116,9 @@ lib/
     ai.ts                           Provider, fallback, sanitization, recommendations
     calculations.ts                 Metrics, priority scores, INR formatting
     guardrails.ts                   Independent financial policy engine
-    audit.ts                        Local audit ledger
+    audit.ts                        Server-side append-only audit ledger
+    env.ts                          Zod-validated runtime configuration
+    store/                          Upstash Redis or atomic in-memory store
     razorpay.ts                     Server-only Razorpay client
     types.ts                        Shared domain and API contracts
 data/
@@ -145,6 +147,9 @@ GEMINI_API_KEY=your_gemini_api_key
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
+APPROVAL_TOKEN_SECRET=at_least_32_random_characters
+UPSTASH_REDIS_REST_URL=https://your-upstash-endpoint
+UPSTASH_REDIS_REST_TOKEN=your-upstash-token
 ```
 
 Start the development server:
@@ -170,7 +175,7 @@ The deterministic fallback works without `GEMINI_API_KEY`. Razorpay order creati
 Run the production checks before deployment:
 
 ```bash
-npx tsc --noEmit
+npm run check
 npm run build
 ```
 
@@ -190,3 +195,18 @@ The production build currently compiles, passes lint/type validation, and genera
 ## Secret Handling
 
 Real API keys are intentionally **not committed to Git**. `.env.example` contains placeholders only, and `.env.local` is ignored by Git. Configure secrets locally or in the deployment provider's environment settings. If a real key was ever exposed publicly, revoke and rotate it immediately.
+
+## Security model
+
+- `lib/env.ts` validates all required credentials at runtime. No security-sensitive secret has a fallback value.
+- Vercel deployments should provision Upstash Redis and set both `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`; the in-memory store is intended for local development and tests only.
+- Budget reservations, approval-token replay protection, workflow status transitions, payment idempotency, and audit events are server-side operations.
+- Razorpay HMAC verification uses the server-only Razorpay secret. Failed payments terminate the workflow and are never retried automatically.
+
+## Vercel deployment
+
+Create an Upstash Redis database, add the variables from `.env.example` to the Vercel project for Preview and Production, and use separate Razorpay Test/Live credentials per environment. Deploy only after `npm run check` and `npm run build` pass.
+
+## Secret rotation
+
+The history scan found the old non-production approval fallback literal in commit `ef9e7d6` (`feat: add server approval workflow`); no `AIza` or `rzp_` credential matches were found. It is not a live credential, but purge it if policy requires: `git filter-repo --replace-text replacements.txt`, where `replacements.txt` contains `dev_merchantmind_approval_secret_key_2026==>***REMOVED***`; then force-push rewritten refs and ask collaborators to reclone. Any real credential discovered elsewhere must be rotated before purging.

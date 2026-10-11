@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { getTrustedOpportunityById } from "@/lib/ai";
 import { recordCompletedOpportunity } from "@/lib/budget";
+import { recordPaymentResult, transitionOpportunity } from "@/lib/budget";
+import { getEnv } from "@/lib/env";
 import type { ApiResponse } from "@/lib/types";
 
 interface VerifyRequestBody {
@@ -25,8 +27,7 @@ export interface PaymentVerificationResult {
  * its own — this HMAC check and server-side amount check is the only source of truth.
  */
 function isValidSignature(orderId: string, paymentId: string, signature: string): boolean {
-  const secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!secret) return false;
+  const secret = getEnv().RAZORPAY_KEY_SECRET;
 
   const expected = createHmac("sha256", secret).update(`${orderId}|${paymentId}`).digest("hex");
 
@@ -79,9 +80,12 @@ export async function POST(request: Request) {
   }
 
   // Record completion server-side to prevent duplicate executions
-  recordCompletedOpportunity(opportunityId);
-
   const verifiedAmount = opportunity.expectedRecovery;
+  const recorded = await recordPaymentResult(opportunityId, paymentId, verifiedAmount);
+  if (!recorded.counted && !(await recordCompletedOpportunity(opportunityId))) {
+    return NextResponse.json({ success: false, error: "Payment result already recorded." }, { status: 409 });
+  }
+  await transitionOpportunity(opportunityId, "successful");
 
   const result: PaymentVerificationResult = {
     paymentId,

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { runAnalysis, runDeterministicAnalysis } from "@/lib/ai";
 import type { ApiResponse, AnalysisResponse } from "@/lib/types";
 import { customers, transactions } from "@/lib/validation";
+import { appendAuditEvent } from "@/lib/audit";
 
 export async function POST(request: Request) {
   // Demo Scenarios control (Phase 8): "AI API Failure" forces the
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
       : await runAnalysis(customers, transactions);
 
     const body: ApiResponse<AnalysisResponse> = { success: true, data: result };
+    await appendAuditEvent({ actor: "AI_AGENT", actionType: "ANALYSIS_COMPLETED", status: "success", description: result.summary, metadata: { source: result.source, opportunityCount: result.opportunities.length } });
     return NextResponse.json(body);
   } catch (error) {
     console.error("analyze route error:", error);

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTrustedOpportunityById } from "@/lib/ai";
 import { validateOpportunity } from "@/lib/guardrails";
-import { getApprovedIncentiveTotal } from "@/lib/budget";
+import { getApprovedIncentiveTotal, reserveApprovedIncentive, rollbackApprovedIncentive, transitionOpportunity } from "@/lib/budget";
 import { issueApprovalToken } from "@/lib/approvalToken";
 import type { ApiResponse } from "@/lib/types";
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   }
 
   // Re-run Guardrail Engine independently before issuing approval token
-  const approvedIncentiveTotal = getApprovedIncentiveTotal();
+  const approvedIncentiveTotal = await getApprovedIncentiveTotal();
   const guardrailResult = validateOpportunity(opportunity, approvedIncentiveTotal);
   if (!guardrailResult.allowed) {
     const failure: ApiResponse<never> = {
@@ -53,8 +53,14 @@ export async function POST(request: Request) {
     return NextResponse.json(failure, { status: 400 });
   }
 
-  // Issue signed approval token
+  const reserved = await reserveApprovedIncentive(opportunity.recommendedDiscount);
+  if (reserved === null) return NextResponse.json({ success: false, error: "Session incentive budget exceeded." }, { status: 409 });
+  // Issue signed, single-use approval token
   const approvalToken = issueApprovalToken(opportunityId);
+  if (!(await transitionOpportunity(opportunityId, "approved"))) {
+    await rollbackApprovedIncentive(opportunity.recommendedDiscount);
+    return NextResponse.json({ success: false, error: "Opportunity is already in progress." }, { status: 409 });
+  }
 
   const result: ApproveResult = {
     opportunityId,

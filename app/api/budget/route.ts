@@ -3,7 +3,7 @@ import { getApprovedIncentiveTotal, recordApprovedIncentive, rollbackApprovedInc
 import type { ApiResponse } from "@/lib/types";
 
 export async function GET() {
-  const total = getApprovedIncentiveTotal();
+  const total = await getApprovedIncentiveTotal();
   const success: ApiResponse<{ approvedIncentiveTotal: number }> = {
     success: true,
     data: { approvedIncentiveTotal: total },
@@ -17,11 +17,11 @@ export async function POST(request: Request) {
     const action = body.action;
     const discount = typeof body.discount === "number" ? body.discount : 0;
 
-    let updated = getApprovedIncentiveTotal();
+    let updated = await getApprovedIncentiveTotal();
     if (action === "approve") {
-      updated = recordApprovedIncentive(discount);
+      updated = await recordApprovedIncentive(discount);
     } else if (action === "rollback") {
-      updated = rollbackApprovedIncentive(discount);
+      updated = await rollbackApprovedIncentive(discount);
     }
 
     const success: ApiResponse<{ approvedIncentiveTotal: number }> = {

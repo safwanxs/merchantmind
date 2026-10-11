@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getRazorpayClient } from "@/lib/razorpay";
 import { getTrustedOpportunityById } from "@/lib/ai";
 import { validateOpportunity } from "@/lib/guardrails";
-import { getApprovedIncentiveTotal, isOpportunityCompleted } from "@/lib/budget";
+import { getApprovedIncentiveTotal, isOpportunityCompleted, transitionOpportunity } from "@/lib/budget";
 import { verifyApprovalToken } from "@/lib/approvalToken";
 import type { ApiResponse } from "@/lib/types";
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   }
 
   // Approval Verification Guard: Must verify valid merchant approval token before proceeding
-  if (!verifyApprovalToken(approvalToken, opportunityId)) {
+  if (!(await verifyApprovalToken(approvalToken, opportunityId))) {
     const failure: ApiResponse<never> = {
       success: false,
       error: "Merchant approval token missing or invalid.",
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   }
 
   // Duplicate Execution Guard: Refuse if payment is already recorded for this opportunity
-  if (isOpportunityCompleted(opportunityId)) {
+  if (await isOpportunityCompleted(opportunityId)) {
     const failure: ApiResponse<never> = {
       success: false,
       error: "Payment already completed for this opportunity. Duplicate execution rejected.",
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   }
 
   // Re-run guardrails server-side using server-persisted budget total
-  const approvedIncentiveTotal = getApprovedIncentiveTotal();
+  const approvedIncentiveTotal = await getApprovedIncentiveTotal();
   const guardrailResult = validateOpportunity(opportunity, approvedIncentiveTotal);
   if (!guardrailResult.allowed) {
     const failure: ApiResponse<never> = {
@@ -100,6 +100,7 @@ export async function POST(request: Request) {
       receipt: `mm_${opportunityId}_${Date.now()}`,
       notes: { opportunityId },
     });
+    await transitionOpportunity(opportunityId, "order_created");
 
     const result: CreateOrderResult = {
       orderId: order.id,

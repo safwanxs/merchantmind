@@ -11,7 +11,6 @@ import type {
   Transaction,
 } from "@/lib/types";
 import { validateOpportunity } from "@/lib/guardrails";
-import { appendAuditEvent, clearAuditLog, getAuditLog } from "@/lib/audit";
 import { formatINR } from "@/lib/calculations";
 import type { PaymentVerificationResult } from "@/app/api/payment-status/route";
 
@@ -50,9 +49,11 @@ export default function DashboardClient() {
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
   const [verifiedRecovered, setVerifiedRecovered] = useState(0);
 
-  // Load persisted audit history once, client-side only (localStorage), and fetch server budget total.
+  // Load the server-side append-only audit ledger and server budget.
   useEffect(() => {
-    setAuditLog(getAuditLog());
+    fetch("/api/audit").then((res) => res.json()).then((body) => {
+      if (body.success && Array.isArray(body.data)) setAuditLog(body.data as AuditEvent[]);
+    }).catch(() => {});
     fetch("/api/budget")
       .then((res) => res.json())
       .then((body) => {
@@ -66,7 +67,8 @@ export default function DashboardClient() {
   const guardrailLogged = useRef<Set<string>>(new Set());
 
   function logEvent(event: Omit<AuditEvent, "id" | "timestamp">) {
-    setAuditLog(appendAuditEvent(event));
+    fetch("/api/audit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(event) })
+      .then((res) => res.json()).then((body) => { if (body.success && body.data) setAuditLog((prev) => [body.data as AuditEvent, ...prev]); }).catch(() => {});
   }
 
   function handleAnalysisComplete(result: AnalysisResponse, forcedFallback: boolean) {
@@ -164,11 +166,6 @@ export default function DashboardClient() {
       setApprovalTokens((prev) => ({ ...prev, [opportunity.id]: token }));
 
       setApprovedIncentiveTotal((prev) => prev + opportunity.recommendedDiscount);
-      fetch("/api/budget", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve", discount: opportunity.recommendedDiscount }),
-      }).catch(() => {});
 
       setOppStates((prev) => ({
         ...prev,
@@ -282,7 +279,7 @@ export default function DashboardClient() {
   }
 
   function handleClearAudit() {
-    clearAuditLog();
+    fetch("/api/audit", { method: "DELETE" }).catch(() => {});
     setAuditLog([]);
   }
 

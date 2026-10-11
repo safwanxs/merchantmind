@@ -7,6 +7,10 @@ import type {
   Transaction,
 } from "./types";
 import { customers, transactions } from "./validation";
+import { z } from "zod";
+import { GoogleGenAI } from "@google/genai";
+import { getOptionalEnv } from "@/lib/env";
+import { buildAnalysisPrompt } from "@/lib/ai/prompts";
 
 // ---------------------------------------------------------------------------
 // Guardrail-adjacent constants used directly inside the analysis engine.
@@ -48,6 +52,15 @@ interface RawAnalysis {
   summary?: unknown;
   opportunities?: unknown;
 }
+
+const rawAnalysisSchema = z.object({
+  summary: z.string().optional(),
+  opportunities: z.array(z.object({
+    customerId: z.string(), transactionId: z.string(), problem: z.string(),
+    recommendedAction: z.string(), recommendedDiscount: z.number(), confidence: z.number(),
+    reasoning: z.string(), riskLevel: z.string(),
+  })).optional(),
+});
 
 /**
  * Clamps a discount to the same rules the Guardrail Engine enforces:
@@ -380,8 +393,8 @@ function validateAndSanitize(
 }
 
 // ---------------------------------------------------------------------------
-// Gemini provider (Phase 4). Calls the REST generateContent endpoint
-// directly — no extra SDK dependency.
+// Gemini provider uses the official SDK. The provider is isolated so fallback
+// behavior remains deterministic and testable.
 // ---------------------------------------------------------------------------
 const GEMINI_MODEL = "gemini-2.0-flash";
 
@@ -389,41 +402,25 @@ export class GeminiProvider implements AIProvider {
   name = "gemini";
 
   async analyze(customers: Customer[], transactions: Transaction[]): Promise<AnalysisResponse> {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = getOptionalEnv().GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is not configured");
     }
 
-    const prompt = buildPrompt(customers, transactions);
-
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.3,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Gemini API returned ${response.status}`);
-    }
-
-    const data = await response.json();
-    const text: string | undefined = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const ai = new GoogleGenAI({ apiKey });
+    const response = await ai.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: buildAnalysisPrompt(customers, transactions),
+      config: { responseMimeType: "application/json", temperature: 0.3 },
+    });
+    const text = response.text;
     if (!text) {
       throw new Error("Gemini response contained no text");
     }
 
     let parsed: RawAnalysis;
     try {
-      parsed = JSON.parse(text);
+      parsed = rawAnalysisSchema.parse(JSON.parse(text));
     } catch {
       throw new Error("Gemini response was not valid JSON");
     }
@@ -441,38 +438,6 @@ export class GeminiProvider implements AIProvider {
   }
 }
 
-function buildPrompt(customers: Customer[], transactions: Transaction[]): string {
-  return `You are a revenue recovery analyst for an e-commerce merchant.
-Given the customers and transactions below, identify revenue recovery opportunities.
-
-Rules:
-- Only consider transactions with status "abandoned" or "payment_failed".
-- For abandoned carts, recommend a discount no larger than 5% of cart value, capped at ₹500.
-- For payment failures, never recommend a retry action with a discount — recommend "payment_retry_suggestion" with discount 0.
-- Respond with ONLY JSON matching this exact shape, no markdown, no commentary:
-{
-  "summary": "string",
-  "opportunities": [
-    {
-      "customerId": "string",
-      "customerName": "string",
-      "transactionId": "string",
-      "problem": "abandoned_cart | payment_failure",
-      "cartValue": number,
-      "recommendedAction": "discount | payment_retry_suggestion",
-      "recommendedDiscount": number,
-      "confidence": number,
-      "expectedRecovery": number,
-      "reasoning": "string",
-      "riskLevel": "low | medium | high"
-    }
-  ]
-}
-
-Customers: ${JSON.stringify(customers)}
-Transactions: ${JSON.stringify(transactions)}`;
-}
-
 // ---------------------------------------------------------------------------
 // Single entry point the API route calls. Tries the AI provider, validates
 // its output, and falls back to the deterministic engine on any failure —
@@ -487,10 +452,23 @@ export async function runAnalysis(
     (t) => t.status === "abandoned" || t.status === "payment_failed"
   );
 
-  if (process.env.GEMINI_API_KEY) {
+  if (getOptionalEnv().GEMINI_API_KEY) {
     try {
       const provider = new GeminiProvider();
-      const result = await provider.analyze(customers, transactions);
+      let result: AnalysisResponse | undefined;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          result = await Promise.race([
+            provider.analyze(customers, transactions),
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Gemini timeout")), 8000)),
+          ]);
+          break;
+        } catch (error) {
+          if (attempt === 1) throw error;
+          await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+        }
+      }
+      if (!result) throw new Error("Gemini returned no result");
       if (result.opportunities.length > 0 || !hasRealRisk) {
         return result;
       }

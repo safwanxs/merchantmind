@@ -1,69 +1,35 @@
-import fs from "fs";
-import path from "path";
+import "server-only";
+import { getStore } from "@/lib/store";
 
-// Server-side persistence for campaign budget & execution state without external DB infrastructure.
-const BUDGET_FILE = path.join(process.cwd(), "data", "budget.json");
+const BUDGET_KEY = "merchantmind:budget:approved";
+const OPPORTUNITY_PREFIX = "merchantmind:opportunity:";
+const MAX_BUDGET = 5000;
 
-interface BudgetStore {
-  approvedIncentiveTotal: number;
-  completedOpportunityIds: string[];
+export type WorkflowStatus = "pending" | "approved" | "order_created" | "successful" | "failed";
+const transitions: Record<WorkflowStatus, readonly WorkflowStatus[]> = {
+  pending: ["approved"], approved: ["order_created", "failed"], order_created: ["successful", "failed"], successful: [], failed: [],
+};
+export async function getApprovedIncentiveTotal(): Promise<number> { return (await getStore().get<number>(BUDGET_KEY)) ?? 0; }
+export async function reserveApprovedIncentive(amount: number): Promise<number | null> {
+  if (!Number.isFinite(amount) || amount < 0) return null;
+  const next = await getStore().increment(BUDGET_KEY, amount);
+  if (next > MAX_BUDGET) { await getStore().increment(BUDGET_KEY, -amount); return null; }
+  return next;
 }
-
-function readStore(): BudgetStore {
-  try {
-    if (fs.existsSync(BUDGET_FILE)) {
-      const content = fs.readFileSync(BUDGET_FILE, "utf-8");
-      const parsed = JSON.parse(content);
-      return {
-        approvedIncentiveTotal:
-          typeof parsed.approvedIncentiveTotal === "number" ? parsed.approvedIncentiveTotal : 0,
-        completedOpportunityIds: Array.isArray(parsed.completedOpportunityIds)
-          ? (parsed.completedOpportunityIds as string[])
-          : [],
-      };
-    }
-  } catch {
-    // Fall through to default if file read/parse fails
-  }
-  return { approvedIncentiveTotal: 0, completedOpportunityIds: [] };
+export async function rollbackApprovedIncentive(amount: number): Promise<number> { return Math.max(0, await getStore().increment(BUDGET_KEY, -amount)); }
+export async function recordApprovedIncentive(amount: number): Promise<number> { return (await reserveApprovedIncentive(amount)) ?? (await getApprovedIncentiveTotal()); }
+export async function getOpportunityStatus(id: string): Promise<WorkflowStatus> { return (await getStore().get<WorkflowStatus>(`${OPPORTUNITY_PREFIX}${id}:status`)) ?? "pending"; }
+export async function transitionOpportunity(id: string, next: WorkflowStatus): Promise<boolean> {
+  const current = await getOpportunityStatus(id);
+  if (current === next) return true;
+  if (!transitions[current].includes(next)) return false;
+  return getStore().compareAndSet(`${OPPORTUNITY_PREFIX}${id}:status`, current, next);
 }
-
-function writeStore(store: BudgetStore): void {
-  try {
-    fs.mkdirSync(path.dirname(BUDGET_FILE), { recursive: true });
-    fs.writeFileSync(BUDGET_FILE, JSON.stringify(store, null, 2), "utf-8");
-  } catch {
-    // Ignore write failures in read-only environments
-  }
-}
-
-export function getApprovedIncentiveTotal(): number {
-  return readStore().approvedIncentiveTotal;
-}
-
-export function recordApprovedIncentive(discountAmount: number): number {
-  const store = readStore();
-  store.approvedIncentiveTotal += discountAmount;
-  writeStore(store);
-  return store.approvedIncentiveTotal;
-}
-
-export function rollbackApprovedIncentive(discountAmount: number): number {
-  const store = readStore();
-  store.approvedIncentiveTotal = Math.max(0, store.approvedIncentiveTotal - discountAmount);
-  writeStore(store);
-  return store.approvedIncentiveTotal;
-}
-
-export function isOpportunityCompleted(opportunityId: string): boolean {
-  const store = readStore();
-  return store.completedOpportunityIds.includes(opportunityId);
-}
-
-export function recordCompletedOpportunity(opportunityId: string): void {
-  const store = readStore();
-  if (!store.completedOpportunityIds.includes(opportunityId)) {
-    store.completedOpportunityIds.push(opportunityId);
-    writeStore(store);
-  }
+export async function isOpportunityCompleted(id: string): Promise<boolean> { return (await getOpportunityStatus(id)) === "successful"; }
+export async function recordCompletedOpportunity(id: string): Promise<boolean> { return transitionOpportunity(id, "successful"); }
+export async function recordPaymentResult(id: string, paymentId: string, amount: number): Promise<{ counted: boolean; amount: number }> {
+  const first = await getStore().setIfNotExists(`${OPPORTUNITY_PREFIX}${id}:payment:${paymentId}`, { amount }, 86400);
+  if (!first) return { counted: false, amount };
+  await transitionOpportunity(id, "successful");
+  return { counted: true, amount };
 }
